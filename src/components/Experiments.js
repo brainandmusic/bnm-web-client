@@ -12,7 +12,10 @@ function Experiments() {
         <Route exact path={path}>
           <ExperimentSearch />
         </Route>
-        <Route path={`${path}/builder/platform/:platform`}>
+        <Route path={`${path}/builder/platform/:platform/experiment/:experimentId`}>
+          <ExperimentBuilder />
+        </Route>
+        <Route path={`${path}/builder/platform/:platform/`}>
           <ExperimentBuilder />
         </Route>
         <Route path={`${path}/run/platform/:platform/project/:pid/experiment/:eid/complete`}>
