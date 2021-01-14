@@ -40,20 +40,32 @@ function ExperimentCard() {
     setAnchorEl(null);
   };
 
+  const handleRunClick = () => {
+    // TODO:
+    // 1) prepare the data runner window needs to run the experiment
+    // 2) create a modal to show the user progress/status of the running experiment in another window
+    // 3) when user completes the experiment, upload response to database
+    const windowFeatures = "menubar=no,location=no,toolbar=no,resizable=yes";
+    window.open(`${process.env.PUBLIC_URL}/experiments/runner/labjs/`, "", windowFeatures);
+  }
+
   return (
     <Card className={classes.root}>
       <CardActionArea>
         <CardContent>
-          <Typography variant="h5" component="h2" gutterBottom className={classes.title}>
+          <Typography variant="subtitle2" color="textSecondary">
+            Platform
+          </Typography>
+          <Typography variant="subtitle1" component="h2" gutterBottom >
             Experiment Title
-        </Typography>
+          </Typography>
           <Typography variant="body2" color="textSecondary" className={classes.description}>
             Experiment description
         </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="start experiment">
+        <IconButton aria-label="start experiment" onClick={handleRunClick}>
           <PlayArrowIcon />
         </IconButton>
         <IconButton aria-label="config experiment">
