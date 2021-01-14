@@ -1,0 +1,14 @@
+div.card.editor-field {
+  margin-top: 0.5rem;
+}
+/* Add some padding so that the editor
+   does not overlap the rounded corners */
+div.card.editor-field .react-monaco-editor-container {
+  margin: 0.25rem 0;
+}
+/* Make sure that error messages in the
+   card footer do not disappear below the fold */
+div.card.editor-field.border-warning .card-footer {
+  position: sticky;
+  bottom: 0px;
+}

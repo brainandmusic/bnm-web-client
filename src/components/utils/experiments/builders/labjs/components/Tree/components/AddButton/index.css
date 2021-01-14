@@ -1,0 +1,44 @@
+/* Actual button styles */
+div.addButton {
+  height: 2px;
+  margin: 0;
+  overflow-y: hidden;
+  opacity: 0;
+
+  /* The animation is design to add margins first,
+     then expand the button, and finally add opacity.
+     These factors are controlled so that the button
+     borders have passed any element above before
+     they are visible to avoid overlaps */
+  transition: height 0.20s 0.05s, margin 0.20s 0.04s,
+    opacity 0.10s 0.06s, color 0.10s 0.06s, border 0.10s 0.06s;
+
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--secondary);
+  border-radius: 0.25rem;
+  border: 1px solid var(--secondary);
+}
+
+div.addButton:hover {
+  color: var(--gray);
+}
+
+div.nodeGap:hover div.addButton,
+div.addButton.addButton-pinned {
+  height: 28px;
+  margin: 12px 0;
+  border: 1px solid var(--secondary);
+  opacity: 1;
+}
+
+.dropTarget.dropTarget-hover div.addButton {
+  color: var(--gray);
+  border-color: var(--gray)
+}
+
+div.addButton > .fa-plus {
+  display: block;
+  position: relative;
+  top: 0.475rem;
+}
