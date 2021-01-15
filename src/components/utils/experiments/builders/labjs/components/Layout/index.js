@@ -13,10 +13,10 @@ import './index.css'
 export default ({ sidebar, footer, children }) =>
   <div className="grid-wrapper">
     <div className="grid-sidebar">
-      { sidebar }
+      {sidebar}
     </div>
     <div className="grid-footer">
-      { footer }
+      {footer}
     </div>
     <div className="grid-contents">
       {/* TODO: Remove xs size jump to 510px,
@@ -30,7 +30,7 @@ export default ({ sidebar, footer, children }) =>
           padding: '0',
         }}
       >
-        { children }
+        {children}
       </Container>
     </div>
   </div>
