@@ -3,16 +3,17 @@ import { prePopulateCache } from './index'
 export default async (store) => {
   if ('serviceWorker' in navigator) {
     // Compute root URL by removing filename from path, if present
-    const rootUrl = window.location.pathname.substring(
-      0, window.location.pathname.lastIndexOf('/') + 1
-    ) + 'api/'
+    // const rootUrl = window.location.pathname.substring(
+    //   0, window.location.pathname.lastIndexOf('/') + 1
+    // ) + 'api/'
+    const rootUrl = process.env.PUBLIC_URL + '/api/'
 
     // Register service worker
     const registrations = await navigator.serviceWorker.getRegistrations()
 
     // Remove legacy workers during architectural transition
     await Promise.all(
-      registrations.map( r => r.unregister() )
+      registrations.map(r => r.unregister())
     )
 
     try {
@@ -20,7 +21,7 @@ export default async (store) => {
       await navigator.serviceWorker.register(
         process.env.PUBLIC_URL + '/api/worker.js', { scope: rootUrl }
       )
-      console.log(`Preview worker registered successfully at ${ rootUrl }`)
+      console.log(`Preview worker registered successfully at ${rootUrl}`)
 
       // Prepopulate cache with library files
       await prePopulateCache()
