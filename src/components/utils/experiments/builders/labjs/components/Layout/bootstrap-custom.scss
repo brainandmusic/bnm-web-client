@@ -161,3 +161,10 @@ table.border-top-0 colgroup + tbody tr:first-of-type td {
   padding-left: 1rem;
   padding-right: 1rem;
 }
+
+// Fix style conflict with material UI
+a {
+  &:hover {
+    text-decoration: inherit;
+  }
+}
