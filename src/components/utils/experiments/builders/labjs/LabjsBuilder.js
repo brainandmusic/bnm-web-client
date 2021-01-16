@@ -13,7 +13,6 @@ import HTML5DragDropBackend from 'react-dnd-html5-backend'
 
 // App content
 import App from './components/App'
-import './index.css'
 
 // Sentry error reporting for production releases
 // (if a DSN is specified as an environment parameter, that is)
