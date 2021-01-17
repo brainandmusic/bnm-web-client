@@ -9,14 +9,14 @@ import { connect } from 'react-redux'
 
 const MetadataForm = ({ data, updateComponent }) =>
   <Formik
-    initialValues={ data }
+    initialValues={data}
   >
     <form>
       <h4 className="mt-1">
-        Study information
+        Experiment information
       </h4>
       <p className="text-muted">
-        Please tell your fellow scientists a few things about your study.
+        Please tell your fellow scientists a few things about your experiment.
       </p>
       <hr />
       <FormGroup row>
@@ -26,7 +26,7 @@ const MetadataForm = ({ data, updateComponent }) =>
         <Col sm={10}>
           <Field
             name="title"
-            component={ Input }
+            component={Input}
             bsSize="lg"
             className="font-weight-bold"
             style={{
@@ -42,16 +42,16 @@ const MetadataForm = ({ data, updateComponent }) =>
         <Col sm={10}>
           <Field
             name="description"
-            component={ Input }
+            component={Input}
             type="textarea"
             rows="3"
           />
           <FormText color="muted">
-            What does your study do?
+            What does your experiment do?
           </FormText>
         </Col>
       </FormGroup>
-      <hr />
+      {/* <hr />
       <FormGroup row>
         <Label for="repository" size="sm" sm={2}>
           Repository
@@ -60,7 +60,7 @@ const MetadataForm = ({ data, updateComponent }) =>
           <Field
             name="repository"
             placeholder="https://osf.io/... / https://github.com/..."
-            component={ Input }
+            component={Input}
             bsSize="sm"
             className="text-monospace"
           />
@@ -77,7 +77,7 @@ const MetadataForm = ({ data, updateComponent }) =>
           <Field
             name="contributors"
             placeholder="Rita Levi-Montalcini &lt;rlm@nobel.example&gt; (http://ibcn.cnr.it)"
-            component={ Input }
+            component={Input}
             type="textarea" rows="3"
             bsSize="sm" className="text-monospace"
           />
@@ -85,7 +85,7 @@ const MetadataForm = ({ data, updateComponent }) =>
             <em>One line each, please!</em> To keep things tidy, please enter full names (or secret pseudonyms) for everyone who helped build this study. You can also add an email address (in angle brackets) and a link (in round brackets).
           </FormText>
         </Col>
-      </FormGroup>
+      </FormGroup> */}
       <AutoSave
         onSave={
           data => updateComponent('root', { metadata: data })
