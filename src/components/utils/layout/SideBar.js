@@ -88,6 +88,9 @@ const useStyles = makeStyles((theme) => ({
       display: "none",
     }
   },
+  zIndexAuto: {
+    zIndex: "auto"
+  }
 }));
 
 function SideBar({ variant, open, handleClose }) {
@@ -112,6 +115,7 @@ function SideBar({ variant, open, handleClose }) {
         paper: clsx({
           [classes.drawerExpand]: expand,
           [classes.drawerCollapse]: !expand,
+          [classes.zIndexAuto]: variant === "persistent",
         }),
       }}
       onClose={handleClose}
