@@ -168,3 +168,13 @@ a {
     text-decoration: inherit;
   }
 }
+
+button {
+  outline: none;
+  &:active {
+    outline: none;
+  }
+  &:focus {
+    outline: none;
+  }
+}
