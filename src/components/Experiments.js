@@ -2,12 +2,12 @@ import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import ExperimentBuilder from './utils/experiments/ExperimentBuilder';
 import ExperimentSearch from './utils/experiments/ExperimentSearch';
-import Layout from './utils/Layout';
+import Layout from './utils/layout/Layout';
 
 function Experiments() {
   const { path } = useRouteMatch();
   return (
-    <Layout>
+    <Layout title="Experiments">
       <Switch>
         <Route exact path={path}>
           <ExperimentSearch />
