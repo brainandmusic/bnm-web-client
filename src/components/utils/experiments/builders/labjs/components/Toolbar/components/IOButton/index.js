@@ -40,7 +40,7 @@ const IOButton = () => {
       <DropdownItem header>Experiment</DropdownItem>
       <DropdownItem
         onClick={() => {
-          if (window.confirm('Are you sure you want to reset the study?')) {
+          if (window.confirm('Are you sure you want to reset the experiment?')) {
             store.dispatch({ type: 'RESET_STATE' })
           }
         }}
@@ -78,7 +78,7 @@ const IOButton = () => {
           store.getState(), { removeInternals: e.shiftKey }
         )}
       >
-        Save
+        Save as ...
       </DropdownItem>
       <DropdownItem divider />
       <DropdownItem header>Export for local use</DropdownItem>
