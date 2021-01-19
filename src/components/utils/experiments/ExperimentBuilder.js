@@ -3,10 +3,10 @@ import { useParams } from 'react-router-dom';
 import LabjsBuilder from './builders/labjs/LabjsBuilder';
 
 function ExperimentBuilder() {
-  const { platform } = useParams();
+  const { platform, experimentId } = useParams();
 
   if (platform === "labjs") {
-    return <LabjsBuilder />
+    return <LabjsBuilder eid={experimentId} />
   }
   else {
     return (
