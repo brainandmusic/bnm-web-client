@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -60,6 +60,94 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUpSide() {
   const classes = useStyles();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [errorFirstName, setErrorFirstName] = useState(false);
+  const [errorLastName, setErrorLastName] = useState(false);
+  const [errorEmail, setErrorEmail] = useState(false);
+  const [errorPassword, setErrorPassword] = useState(false);
+  const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
+
+  const validFirstName = (name) => name && name.length > 0;
+  const validLastName = (name) => name && name.length > 0;
+  const validEmail = (email) => {
+    return /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)+$/.test(email);
+  }
+  const validPassword = (password) => {
+    return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,25}$/.test(password);
+  }
+  const validConfirmPassword = (cpwd) => cpwd === password;
+
+  const handleFirstNameChange = (e) => {
+    const newFirstName = e.target.value;
+    setFirstName(newFirstName);
+    if (validFirstName(newFirstName)) {
+      setErrorFirstName(false);
+    }
+  }
+
+  const handleLastNameChange = (e) => {
+    const newLastName = e.target.value;
+    setLastName(newLastName);
+    if (validLastName(newLastName)) {
+      setErrorLastName(false);
+    }
+  }
+
+  const handleEmailChange = (e) => {
+    const newEmail = e.target.value;
+    setEmail(newEmail);
+    if (validEmail(newEmail)) {
+      setErrorEmail(false);
+    }
+  }
+
+  const handlePasswordChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    if (validPassword(newPassword)) {
+      setErrorPassword(false);
+    }
+  }
+
+  const handleConfirmPasswordChange = (e) => {
+    const newConfirmPassword = e.target.value;
+    setConfirmPassword(newConfirmPassword);
+    if (validConfirmPassword(newConfirmPassword)) {
+      setErrorConfirmPassword(false);
+    }
+  }
+
+  const handleSignUp = (e) => {
+    e.preventDefault();
+    let validForm = true;
+    if (!validFirstName(firstName)) {
+      validForm = false;
+      setErrorFirstName(true);
+    }
+    if (!validLastName(lastName)) {
+      validForm = false;
+      setErrorLastName(true);
+    }
+    if (!validEmail(email)) {
+      validForm = false;
+      setErrorEmail(true);
+    }
+    if (!validPassword(password)) {
+      validForm = false;
+      setErrorPassword(true);
+    }
+    if (!validConfirmPassword(confirmPassword)) {
+      validForm = false;
+      setErrorConfirmPassword(true);
+    }
+    if (validForm) {
+      alert('valid form! sign up new account!')
+    }
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -78,47 +166,79 @@ function SignUpSide() {
               <Grid item xs={12} sm={6}>
                 <TextField
                   autoComplete="fname"
-                  name="firstName"
-                  variant="outlined"
-                  required
+                  autoFocus
+                  error={errorFirstName}
                   fullWidth
+                  helperText={errorFirstName && "First name is empty"}
                   id="firstName"
                   label="First Name"
-                  autoFocus
+                  name="firstName"
+                  onChange={handleFirstNameChange}
+                  required
+                  value={firstName}
+                  variant="outlined"
                 />
               </Grid>
               <Grid item xs={12} sm={6}>
                 <TextField
-                  variant="outlined"
-                  required
+                  autoComplete="lname"
+                  error={errorLastName}
                   fullWidth
+                  helperText={errorLastName && "Last name is empty"}
                   id="lastName"
                   label="Last Name"
                   name="lastName"
-                  autoComplete="lname"
+                  onChange={handleLastNameChange}
+                  required
+                  value={lastName}
+                  variant="outlined"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
+                  autoComplete="email"
+                  error={errorEmail}
                   fullWidth
+                  helperText={errorEmail && "Please enter a valid email"}
                   id="email"
                   label="Email Address"
                   name="email"
-                  autoComplete="email"
+                  onChange={handleEmailChange}
+                  required
+                  value={email}
+                  variant="outlined"
                 />
               </Grid>
               <Grid item xs={12}>
                 <TextField
-                  variant="outlined"
-                  required
+                  autoComplete="new-password"
+                  error={errorPassword}
                   fullWidth
-                  name="password"
-                  label="Password"
-                  type="password"
+                  helperText={errorPassword && "Password should be 8-25 characters long and contain at least one digit, one uppercase letter, one lowercase letter and a special character like .!@#$%^&*()_+-="}
                   id="password"
-                  autoComplete="current-password"
+                  label="Password"
+                  name="password"
+                  onChange={handlePasswordChange}
+                  required
+                  type="password"
+                  value={password}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  autoComplete="new-password"
+                  error={errorConfirmPassword}
+                  fullWidth
+                  helperText={errorConfirmPassword && "Confirm password is different from password"}
+                  id="confirm-password"
+                  label="Confirm Password"
+                  name="confirm-password"
+                  onChange={handleConfirmPasswordChange}
+                  required
+                  type="password"
+                  value={confirmPassword}
+                  variant="outlined"
                 />
               </Grid>
               <Grid item xs={12}>
@@ -126,11 +246,12 @@ function SignUpSide() {
               </Grid>
             </Grid>
             <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
               className={classes.submit}
+              color="primary"
+              fullWidth
+              onClick={handleSignUp}
+              type="submit"
+              variant="contained"
             >
               Sign Up
             </Button>
