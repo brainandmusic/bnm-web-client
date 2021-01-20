@@ -1,10 +1,11 @@
-import React from "react";
+import React from 'react';
+import Layout from './utils/layout/Layout';
 
 function Settings() {
   return (
-    <div>
-      <h2>settings page</h2>
-    </div>
+    <Layout title="Settings">
+      This is setting page.
+    </Layout>
   );
 }
 

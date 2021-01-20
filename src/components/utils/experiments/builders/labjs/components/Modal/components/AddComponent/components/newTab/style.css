@@ -1,0 +1,26 @@
+.card.add-component-card {
+  cursor: pointer;
+}
+.card.add-component-card:hover .card-header {
+  color: white;
+  background-color: var(--primary);
+}
+
+.card.add-component-card .card-header {
+  padding: 1.5rem;
+}
+.card.add-component-card .card-header i.far,
+.card.add-component-card .card-header i.fas {
+  font-size: 2rem;
+}
+
+.card.add-component-card .card-body {
+  padding: 1.25rem 0.5rem; /* Reduce padding on the sides to make more room */
+}
+.card.add-component-card .card-body h6.card-subtitle:last-child {
+  margin-bottom: 0 !important;
+}
+
+.card .card-header + .list-group > .list-group-item:first-child {
+  border-top: none;
+}

@@ -1,0 +1,81 @@
+/* Navigation pill styles */
+.tree-node a.nav-link {
+  padding: 0;
+  border-radius: 0.25rem;
+  border: 1px solid transparent;
+}
+.tree-node a.nav-link.active {
+  color: var(--primary);
+  background-color: var(--light);
+  border: 1px solid var(--secondary);
+}
+.tree-node a.nav-link.isDragging {
+  opacity: 0.25;
+}
+
+/* Content spacing */
+.tree-node a.nav-link {
+  display: flex;
+  min-height: 45px;
+}
+.tree-node a.nav-link div.nav-link-main {
+  flex-grow: 1;
+  padding-top: calc(0.5rem + 2px); /* Vertical baseline alignment */
+  cursor: move;
+}
+.tree-node a.nav-link > div {
+  padding: 0.5rem;
+}
+.tree-node a.nav-link > div:first-child {
+  padding-left: 1rem;
+}
+/* If there is no hidden button or drop target,
+   nevertheless use equal spacing.
+   TODO: There should be a spacer in every case */
+.tree-node .nav.nav-pills li.nav-item:first-child {
+  margin-top: 4px;
+}
+
+/* Icon indicators */
+.tree-node a.nav-link .far,
+.tree-node a.nav-link .fas {
+  opacity: 0.25;
+  font-size: 0.7em;
+  margin-left: 0.6em;
+  position: relative;
+  top: -0.05em;
+}
+
+/* Tree indentation */
+.tree-node li.nav-item ul.nav-pills {
+  margin-left: 0.75rem;
+}
+
+/* Gap between nodes */
+.tree-node .nodeGap {
+  /* The difference between the height
+     and the negative margin determines
+     the displacement, or the actual
+     space taken up by the gap */
+  min-height: 20px;
+  margin: -8px 0;
+
+  /* z-index is only applied to positioned elements */
+  position: relative;
+  z-index: 5;
+
+  /* Prevent margin collapse */
+  overflow: auto;
+}
+
+/* Debug helpers
+.tree-node > div:first-child {
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  background-color: red;
+}
+
+.tree-node .nodeGap {
+  background-color: rgba(0, 255, 0, 0.25);
+}
+ */
+

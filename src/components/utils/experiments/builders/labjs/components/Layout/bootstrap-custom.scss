@@ -1,0 +1,180 @@
+
+$primary: #0275d8;
+$secondary: rgb(206, 212, 218);
+$card-cap-bg: rgb(248, 249, 250);
+$highlight: rgb(255, 195, 45);
+$font-family-monospace: "Fira Mono", SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+@import "node_modules/bootstrap/scss/bootstrap";
+
+:root {
+  --highlight: #{$highlight};
+  --gray-700: #{$gray-700};
+  --gray-900: #{$gray-900};
+}
+
+/*
+// TODO: Reconsider this fairly large-scale change
+button.btn, .form-control {
+  min-height: 42px;
+}
+*/
+
+// Recreate bootstrap alpha secondary button style
+// as .btn-outline-secondary
+.btn-outline-secondary {
+  @include button-outline-variant(
+    $secondary,
+    $white
+  );
+  color: black;
+  border-color: $input-border-color;
+
+  @include hover {
+    color: black;
+    background-color: theme-color-level(light, -2);
+    border-color: $secondary;
+  }
+
+  &:not([disabled]):not(.disabled):active,
+  &:not([disabled]):not(.disabled).active,
+  .show > &.dropdown-toggle {
+    color: black;
+    background-color: theme-color-level(light, 0.5);
+  }
+}
+
+.btn-outline-muted {
+  @include button-outline-variant(
+    $secondary,
+    $white
+  );
+
+  color: $secondary;
+  border-color: transparent;
+
+  transition: color 0.2s, border-color 0.2s;
+
+  @include hover {
+    color: $gray-600;
+    border-color: $input-border-color;
+    background-color: white;
+  }
+
+  &[disabled], &.disabled {
+    @include hover {
+      color: $secondary;
+      border-color: transparent;
+    }
+  }
+
+  &:not([disabled]):not(.disabled):active,
+  &:not([disabled]):not(.disabled).active,
+  .show > &.dropdown-toggle {
+    color: $gray-600;
+    background-color: theme-color-level(light, 0.5);
+  }
+}
+
+.btn-group:hover .btn-outline-muted {
+  border-color: $input-border-color;
+}
+
+// Restore pre v4-beta padding to buttons
+// in places where there should be room
+.toolbar .btn:not(.dropdown-toggle),
+.modal-footer .btn:not(.dropdown-toggle) {
+  padding: 0.5rem 1rem;
+}
+
+// Optionally remove click indicator on dropdown items
+.dropdown-item.mute:active {
+  background-color: var(--light);
+}
+.dropdown-item.mute:focus {
+  outline: none;
+}
+
+// Change footer color in cards with warnings
+.card.border-warning .card-footer {
+  border-top-color: $warning;
+  background-color: theme-color-level(warning, -10);
+}
+
+// Change colors in disabled input fields
+input.form-control:disabled, input.form-control[readonly] {
+  background-color: $card-cap-bg;
+}
+
+input.form-control:disabled::placeholder,
+input.form-control[readonly]::placeholder {
+  color: $gray-500;
+}
+
+// Custom checkboxes
+input.custom-control-input[type="checkbox"] + label.custom-control-label {
+  padding-left: 0.25rem;
+}
+
+// Multiple addons in one input group
+input + .input-group-prepend > .input-group-text {
+  border-left: none;
+}
+
+code {
+  font-size: 0.95em;
+}
+
+// Use medium weight for emphasis
+strong, th, .card-header, .font-weight-bold {
+  font-weight: 500 !important;
+}
+
+// (Optionally) remove top border on tables
+// (used mostly for tables directly within cards.
+// this is quite complex because :not works only
+// with simple selectors. Here be dragons!)
+table.border-top-0 :first-child tr:first-of-type td,
+table.border-top-0 :first-child tr:first-of-type th,
+table.border-top-0 colgroup + thead tr:first-of-type td,
+table.border-top-0 colgroup + thead tr:first-of-type th,
+table.border-top-0 colgroup + tbody tr:first-of-type td {
+  border-top: none;
+}
+
+// Round all corners if a header is the last element
+// in a card (i.e. if the remainder is collapsed)
+.card > .card-header:last-child {
+  border-radius: $border-radius;
+}
+
+.card.card-flush {
+  max-height: 225px;
+  overflow-y: auto;
+  margin: 0 -1rem;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+}
+
+.card.card-flush .list-group-item {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+// Fix style conflict with material UI
+a {
+  &:hover {
+    text-decoration: inherit;
+  }
+}
+
+button {
+  outline: none;
+  &:active {
+    outline: none;
+  }
+  &:focus {
+    outline: none;
+  }
+}
