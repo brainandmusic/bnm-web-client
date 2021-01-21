@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
-import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
+import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Grid from '@material-ui/core/Grid';
+import Link from '@material-ui/core/Link';
+import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import MuiAlert from '@material-ui/lab/Alert';
+import Paper from '@material-ui/core/Paper';
+import Snackbar from '@material-ui/core/Snackbar';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 function Copyright() {
   return (
@@ -25,8 +33,18 @@ function Copyright() {
 }
 
 const useStyles = makeStyles((theme) => ({
-  root: {
-    height: '100vh',
+  avatar: {
+    margin: theme.spacing(1),
+    backgroundColor: theme.palette.secondary.main,
+  },
+  buttonProgress: {
+    position: 'absolute',
+    top: 'calc(50% - 10px)',
+    left: 'calc(50% - 12px)',
+  },
+  form: {
+    width: '100%', // Fix IE 11 issue.
+    marginTop: theme.spacing(2),
   },
   image: {
     backgroundImage: 'url(https://source.unsplash.com/8e0EHPUx3Mo)',
@@ -42,13 +60,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
   },
-  avatar: {
-    margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+  root: {
+    height: '100vh',
   },
-  form: {
-    width: '100%', // Fix IE 11 issue.
-    marginTop: theme.spacing(2),
+  signUpButtonWrapper: {
+    position: 'relative',
   },
   submit: {
     margin: theme.spacing(3, 0, 2),
@@ -60,6 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUpSide() {
   const classes = useStyles();
+  const history = useHistory();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -70,6 +87,8 @@ function SignUpSide() {
   const [errorEmail, setErrorEmail] = useState(false);
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
+  const [signingUp, setSigningUp] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const validFirstName = (name) => name && name.length > 0;
   const validLastName = (name) => name && name.length > 0;
@@ -145,9 +164,15 @@ function SignUpSide() {
       setErrorConfirmPassword(true);
     }
     if (validForm) {
-      alert('valid form! sign up new account!')
+      setSigningUp(true);
+      handleOpenSnackbar();
+      // history.push('/experiments');
     }
   }
+
+  const handleOpenSnackbar = () => setOpenSnackbar(true);
+
+  const handleCloseSnackbar = () => setOpenSnackbar(false);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -245,16 +270,20 @@ function SignUpSide() {
                 By signing up you agree to the Term of User and Privacy Policy.
               </Grid>
             </Grid>
-            <Button
-              className={classes.submit}
-              color="primary"
-              fullWidth
-              onClick={handleSignUp}
-              type="submit"
-              variant="contained"
-            >
-              Sign Up
+            <div className={classes.signUpButtonWrapper}>
+              <Button
+                className={classes.submit}
+                color="primary"
+                disabled={signingUp}
+                fullWidth
+                onClick={handleSignUp}
+                type="submit"
+                variant="contained"
+              >
+                Sign Up
             </Button>
+              {signingUp && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
+            </div>
             <Grid container justify="flex-end">
               <Grid item>
                 {"Already have an account? "}
@@ -267,6 +296,11 @@ function SignUpSide() {
           <Box mt={5}>
             <Copyright />
           </Box>
+          <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Alert onClose={handleCloseSnackbar} severity="error">
+              Sorry we can't complete your registration at this moment, please try again later.
+        </Alert>
+          </Snackbar>
         </div>
       </Grid>
     </Grid>
