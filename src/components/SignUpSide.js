@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useHistory } from 'react-router-dom';
+// import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUpSide() {
   const classes = useStyles();
-  const history = useHistory();
+  // const history = useHistory();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
