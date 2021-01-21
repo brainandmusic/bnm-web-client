@@ -299,7 +299,7 @@ function SignUpSide() {
           <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
             <Alert onClose={handleCloseSnackbar} severity="error">
               Sorry we can't complete your registration at this moment, please try again later.
-        </Alert>
+            </Alert>
           </Snackbar>
         </div>
       </Grid>

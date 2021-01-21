@@ -121,7 +121,7 @@ function SignInSide() {
             </Button>
             <Grid container className={classes.tools}>
               <Grid item>
-                <Link href="#" variant="body2">
+                <Link href="/account/current/forgetpassword" variant="body2">
                   Forgot password?
                 </Link>
               </Grid>
