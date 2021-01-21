@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import ForgetPassword from './utils/account/ForgetPassword';
 import Verification from './utils/account/Verification';
 import Welcome from './utils/account/Welcome';
 
@@ -14,12 +15,7 @@ function Account() {
         <Verification />
       </Route>
       <Route path={`${path}/current/forgetpassword`}>
-        <div>
-          this page will be the forget password page
-          user will be asked to fill their email address
-          if email address is even forgetted, send an email
-          to support email
-          </div>
+        <ForgetPassword />
       </Route>
       <Route path={`${path}/current/resetpassword/token/:token`}>
         <div>
