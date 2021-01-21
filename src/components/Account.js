@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import Verification from './utils/account/Verification';
 import Welcome from './utils/account/Welcome';
 
 function Account() {
@@ -10,10 +11,7 @@ function Account() {
         <Welcome />
       </Route>
       <Route path={`${path}/new/verify/email/:email/token/:token`}>
-        <div>
-          this page is the landing page after clicking the link in the Email
-          if expired or error occurs, message will aslo be here
-          </div>
+        <Verification />
       </Route>
       <Route path={`${path}/current/forgetpassword`}>
         <div>
