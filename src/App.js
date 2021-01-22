@@ -12,6 +12,7 @@ import Notifications from './components/Notifications';
 import Settings from './components/Settings';
 import SignInSide from './components/SignInSide';
 import SignUpSide from './components/SignUpSide';
+import Studies from './components/Studies';
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
         <Route path='/signup' children={<SignUpSide />} />
         <Route path='/experiments' children={<Experiments />} />
         <Route path='/settings' children={<Settings />} />
+        <Route path='/studies' children={<Studies />} />
         <Route path='/notifications' children={<Notifications />} />
         <Route path='/messages' children={<Messages />} />
         <Route path='*' children={<NotFound />} />

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { useRouteMatch } from "react-router-dom";
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import Button from '@material-ui/core/Button';
+import CategoryIcon from '@material-ui/icons/Category';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
@@ -19,6 +21,11 @@ import SettingsIcon from '@material-ui/icons/Settings';
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;
 const menu = [
+  {
+    icon: <CategoryIcon />,
+    text: "Studies",
+    href: "/studies",
+  },
   {
     icon: <AssignmentIcon />,
     text: "Experiments",
@@ -95,6 +102,7 @@ const useStyles = makeStyles((theme) => ({
 
 function SideBar({ variant, open, handleClose }) {
   const classes = useStyles();
+  const { path } = useRouteMatch();
   const [expand, setExpand] = useState(true);
   const [menu, setMenu] = useState([]);
 
@@ -142,7 +150,7 @@ function SideBar({ variant, open, handleClose }) {
             >
               <ListItem
                 button
-              // selected={path.toLowerCase().startsWith(`/${item.text.toLowerCase()}`)}
+                selected={path.toLowerCase().startsWith(item.href)}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />
