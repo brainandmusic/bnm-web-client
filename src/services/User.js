@@ -24,6 +24,17 @@ class UserService {
     };
     return axios(options);
   }
+
+  static verifyEmail(email, token) {
+    const url = `${BACKEND_API_BASE_URL}/user/verifyEmail`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      data: qs.stringify({ email, token }),
+      url,
+    };
+    return axios(options);
+  }
 }
 
 export default UserService;
