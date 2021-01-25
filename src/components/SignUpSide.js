@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-// import { useHistory } from 'react-router-dom';
+import { useUser } from '../contexts/AuthContext';
+import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -76,7 +77,8 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUpSide() {
   const classes = useStyles();
-  // const history = useHistory();
+  const user = useUser();
+  const history = useHistory();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -89,6 +91,7 @@ function SignUpSide() {
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
   const [signingUp, setSigningUp] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const validFirstName = (name) => name && name.length > 0;
   const validLastName = (name) => name && name.length > 0;
@@ -165,8 +168,26 @@ function SignUpSide() {
     }
     if (validForm) {
       setSigningUp(true);
-      handleOpenSnackbar();
-      // history.push('/experiments');
+      user.signup(
+        firstName,
+        lastName,
+        email,
+        password
+      ).then(res => {
+        setSigningUp(false);
+        return res.data;
+      }).then(res => {
+        if (res.status !== "OK") {
+          // registration fails, show snackbar
+          setSnackbarMessage(res.message);
+          handleOpenSnackbar();
+          return;
+        }
+        history.push(`/account/new/welcome/email/${email}`);
+      }).catch(error => {
+        setSnackbarMessage(error);
+        handleOpenSnackbar();
+      })
     }
   }
 
@@ -298,7 +319,7 @@ function SignUpSide() {
           </Box>
           <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
             <Alert onClose={handleCloseSnackbar} severity="error">
-              Sorry we can't complete your registration at this moment, please try again later.
+              {snackbarMessage}
             </Alert>
           </Snackbar>
         </div>
