@@ -13,6 +13,17 @@ class UserService {
     };
     return axios(options);
   }
+
+  static sendVerificationEmail(email) {
+    const url = `${BACKEND_API_BASE_URL}/user/sendVerifyEmail`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      data: qs.stringify({ email }),
+      url,
+    };
+    return axios(options);
+  }
 }
 
 export default UserService;

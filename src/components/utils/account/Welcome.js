@@ -11,11 +11,13 @@
  * the resend button in case user doesn't receive the verification
  * email.
  */
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
+import UserService from '../../../services/User';
 import { makeStyles } from '@material-ui/core/styles';
 import { green, grey } from '@material-ui/core/colors';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Paper from '@material-ui/core/Paper';
 import Typograph from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
@@ -29,6 +31,17 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#f5f5f5',
+  },
+  buttonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+  buttonWrapper: {
+    position: 'relative',
+    marginTop: theme.spacing(2),
   },
   checkCircle: {
     fontSize: 192,
@@ -48,9 +61,6 @@ const useStyles = makeStyles((theme) => ({
       maxWidth: '60%',
     }
   },
-  resendButton: {
-    marginTop: theme.spacing(2),
-  },
   thanks: {
     color: green[500],
   }
@@ -59,6 +69,15 @@ const useStyles = makeStyles((theme) => ({
 function Welcome() {
   const { email } = useParams();
   const classes = useStyles();
+  const [sending, setSending] = useState(false);
+
+  const handleResendEmail = () => {
+    setSending(true);
+    UserService.sendVerificationEmail(email).then(() => {
+      setSending(false);
+    });
+  }
+
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={3}>
@@ -74,7 +93,16 @@ function Welcome() {
         <Typograph className={classes.muted} gutterBottom>
           Note: please do check your spam/junk folder in case it's misclassified.
         </Typograph>
-        <Button className={classes.resendButton} variant="outlined">Resend</Button>
+        <div className={classes.buttonWrapper}>
+          <Button
+            variant="outlined"
+            onClick={handleResendEmail}
+            disabled={sending}
+          >
+            Resend
+          </Button>
+          {sending && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
+        </div>
       </Paper>
     </div>
   );
