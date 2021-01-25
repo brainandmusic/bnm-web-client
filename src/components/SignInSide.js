@@ -172,6 +172,7 @@ function SignInSide() {
                 color="primary"
                 className={classes.submit}
                 onClick={handleLogin}
+                disabled={signingIn}
               >
                 Sign In
             </Button>
