@@ -5,7 +5,7 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import { AuthContextProvider, useUser } from './contexts/AuthContext';
+import { AuthContextProvider } from './contexts/AuthContext';
 import Account from './components/Account';
 import Experiments from './components/Experiments';
 import Messages from './components/Messages';
@@ -18,14 +18,13 @@ import SignUpSide from './components/SignUpSide';
 import Studies from './components/Studies';
 
 function App() {
-  const user = useUser();
   return (
     <AuthContextProvider>
       <Router>
         <Switch>
-          <PrivateRoute exact path='/' children={<Redirect to={user.isAdmin ? "/studies" : "/experiments"} />} />
+          <PrivateRoute exact path='/' children={<Redirect to="/experiments" />} />
           <Route path='/account' children={<Account />} />
-          <Route path='/login' children={user.isLoggedIn ? <Redirect to="/" /> : <SignInSide />} />
+          <Route path='/login' children={<SignInSide />} />
           <Route path='/signup' children={<SignUpSide />} />
           <PrivateRoute path='/experiments' children={<Experiments />} />
           <PrivateRoute path='/settings' children={<Settings />} />

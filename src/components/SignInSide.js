@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useHistory } from 'react-router-dom';
+import { useUser } from '../contexts/AuthContext';
 import Alert from '@material-ui/lab/Alert';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
@@ -43,6 +44,11 @@ const useStyles = makeStyles((theme) => ({
     width: '100%',
     marginTop: theme.spacing(2),
   },
+  buttonProgress: {
+    position: 'absolute',
+    top: 'calc(50% - 10px)',
+    left: 'calc(50% - 12px)',
+  },
   paper: {
     margin: theme.spacing(8, 4),
     display: 'flex',
@@ -57,6 +63,9 @@ const useStyles = makeStyles((theme) => ({
     width: '100%', // Fix IE 11 issue.
     marginTop: theme.spacing(1),
   },
+  signInButtonWrapper: {
+    position: 'relative',
+  },
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
@@ -67,6 +76,51 @@ const useStyles = makeStyles((theme) => ({
 
 function SignInSide() {
   const classes = useStyles();
+  const user = useUser();
+  const history = useHistory();
+  const location = useLocation();
+  const { from } = location.state || { from: { pathname: "/" } };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
+
+  useEffect(() => {
+    // when user is logged in, redirect this page to home page
+    if (user.isLoggedIn) {
+      history.replace("/");
+    }
+  }, [user.isLoggedIn]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  }
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  }
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setSigningIn(true)
+    user.signin(email, password).then(res => {
+      setSigningIn(false);
+      return res.data;
+    }).then(res => {
+      if (res.status !== "OK") {
+        // TODO: replace with snackbar
+        alert(res.message);
+        return;
+      }
+      localStorage.setItem("token", res.result.token);
+      user.setIsLoggedIn(true);
+      user.setIsAdmin(res.result.roles.includes("admin"));
+      // go to the page before login, if exists
+      history.replace(from);
+    }).catch(e => {
+      // TODO: replace with snackbar
+      alert(e);
+    });
+  }
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -94,6 +148,8 @@ function SignInSide() {
               name="email"
               autoComplete="email"
               autoFocus
+              onChange={handleEmailChange}
+              value={email}
             />
             <TextField
               variant="outlined"
@@ -105,20 +161,22 @@ function SignInSide() {
               type="password"
               id="password"
               autoComplete="current-password"
+              onChange={handlePasswordChange}
+              value={password}
             />
-            <FormControlLabel
-              control={<Checkbox value="remember" color="primary" />}
-              label="Remember me"
-            />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
-            >
-              Sign In
+            <div className={classes.signInButtonWrapper}>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+                onClick={handleLogin}
+              >
+                Sign In
             </Button>
+              {signingIn && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
+            </div>
             <Grid container className={classes.tools}>
               <Grid item>
                 <Link href="/account/current/forgetpassword" variant="body2">

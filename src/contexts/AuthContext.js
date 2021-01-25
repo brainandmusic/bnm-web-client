@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import UserService from '../services/User';
 
 const AuthContext = React.createContext({
@@ -6,14 +6,13 @@ const AuthContext = React.createContext({
   isAdmin: false,
 });
 
-export const useUser = () => {
+export const useProvideUser = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("token") ? true : false);
   // TODO: get admin status from server
   const [isAdmin, setIsAdmin] = useState(false);
 
-  const signin = (email, pwd) => {
-    // TODO: signin with the server, save jwt token to localStorage
-    // setisLoggedIn and isAdmin accordingly
+  const signin = (email, password) => {
+    return UserService.signin(email, password);
   }
 
   const signup = (firstName, lastName, email, password) => {
@@ -21,13 +20,14 @@ export const useUser = () => {
   }
 
   const signout = () => {
-    // TODO: signout with the server
-    // setisLoggedIn and isAdmin accordingly
+    return UserService.signout();
   }
 
   return {
     isLoggedIn,
     isAdmin,
+    setIsAdmin,
+    setIsLoggedIn,
     signin,
     signup,
     signout,
@@ -35,12 +35,16 @@ export const useUser = () => {
 };
 
 export const AuthContextProvider = ({ children }) => {
-  const user = useUser();
+  const user = useProvideUser();
   return (
     <AuthContext.Provider value={user}>
       {children}
     </AuthContext.Provider>
   );
+}
+
+export const useUser = () => {
+  return useContext(AuthContext);
 }
 
 export const AuthContextConsumer = AuthContext.Consumer;

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import UserService from '../../../services/User';
 import { makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
+import { useUser } from '../../../contexts/AuthContext';
+import UserService from '../../../services/User';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import Paper from '@material-ui/core/Paper';
 import Typograph from '@material-ui/core/Typography';
@@ -46,6 +47,7 @@ function Verification() {
   const { email, token } = useParams();
   const history = useHistory();
   const classes = useStyles();
+  const user = useUser();
   const [verifying, setVerifying] = useState(false);
   const [error, setError] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
@@ -63,8 +65,11 @@ function Verification() {
         setErrorMessage(res.message);
         return;
       }
+      localStorage.setItem("token", res.result.token);
+      user.setIsLoggedIn(true);
+      user.setIsAdmin(res.result.roles.includes("admin"));
     })
-  }, [email, token]);
+  }, [email, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={classes.root}>
