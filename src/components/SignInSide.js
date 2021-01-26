@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import { makeStyles } from '@material-ui/core/styles';
 import { useUser } from '../contexts/AuthContext';
 import Alert from '@material-ui/lab/Alert';
 import Avatar from '@material-ui/core/Avatar';
@@ -12,8 +13,8 @@ import Paper from '@material-ui/core/Paper';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 
 function Copyright() {
   return (
@@ -39,10 +40,6 @@ const useStyles = makeStyles((theme) => ({
       theme.palette.type === 'light' ? theme.palette.grey[50] : theme.palette.grey[900],
     backgroundSize: 'cover',
     backgroundPosition: 'center',
-  },
-  alert: {
-    width: '100%',
-    marginTop: theme.spacing(2),
   },
   buttonProgress: {
     position: 'absolute',
@@ -83,6 +80,8 @@ function SignInSide() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [signingIn, setSigningIn] = useState(false);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
 
   useEffect(() => {
     // when user is logged in, redirect this page to home page
@@ -107,8 +106,8 @@ function SignInSide() {
       return res.data;
     }).then(res => {
       if (res.status !== "OK") {
-        // TODO: replace with snackbar
-        alert(res.message);
+        setSnackbarMessage(res.message);
+        handleOpenSnackbar();
         return;
       }
       localStorage.setItem("token", res.result.token);
@@ -117,10 +116,14 @@ function SignInSide() {
       // go to the page before login, if exists
       history.replace(from);
     }).catch(e => {
-      // TODO: replace with snackbar
-      alert(e);
+      setSnackbarMessage(e);
+      handleOpenSnackbar();
     });
   }
+
+  const handleOpenSnackbar = () => setOpenSnackbar(true);
+
+  const handleCloseSnackbar = () => setOpenSnackbar(false);
 
   return (
     <Grid container component="main" className={classes.root}>
@@ -134,9 +137,6 @@ function SignInSide() {
           <Typography component="h1" variant="h5">
             Sign in
           </Typography>
-          <Alert className={classes.alert} severity="error">
-            There is an error when login, check it out!
-          </Alert>
           <form className={classes.form} noValidate>
             <TextField
               variant="outlined"
@@ -178,23 +178,28 @@ function SignInSide() {
             </Button>
               {signingIn && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
             </div>
-            <Grid container className={classes.tools}>
-              <Grid item>
-                <Link href="/account/current/forgetpassword" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
-              <Grid item>
-                {"Don't have an account? "}
-                <Link href="/signup" variant="body2">
-                  {"Sign Up"}
-                </Link>
-              </Grid>
-            </Grid>
-            <Box mt={5}>
-              <Copyright />
-            </Box>
           </form>
+          <Grid container className={classes.tools}>
+            <Grid item>
+              <Link href="/account/current/forgetpassword" variant="body2">
+                Forgot password?
+                </Link>
+            </Grid>
+            <Grid item>
+              {"Don't have an account? "}
+              <Link href="/signup" variant="body2">
+                {"Sign Up"}
+              </Link>
+            </Grid>
+          </Grid>
+          <Box mt={5}>
+            <Copyright />
+          </Box>
+          <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={handleCloseSnackbar}>
+            <Alert onClose={handleCloseSnackbar} severity="error">
+              {snackbarMessage}
+            </Alert>
+          </Snackbar>
         </div>
       </Grid>
     </Grid>
