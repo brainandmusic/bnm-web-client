@@ -67,7 +67,6 @@ function Verification() {
       }
       localStorage.setItem("token", res.result.token);
       user.setIsLoggedIn(true);
-      user.setIsAdmin(res.result.roles.includes("admin"));
     })
   }, [email, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
