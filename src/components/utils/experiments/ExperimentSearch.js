@@ -1,12 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
+import { useUser } from '../../../contexts/AuthContext';
+import ExperimentCard from './ExperimentCard';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { makeStyles } from '@material-ui/core/styles';
-import ExperimentCard from './ExperimentCard';
 import NewButton from './NewButton';
+import Select from '@material-ui/core/Select';
+import UserService from '../../../services/User';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -41,6 +44,21 @@ const useStyles = makeStyles((theme) => ({
 
 function ExperimentSearch() {
   const classes = useStyles();
+  const history = useHistory();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    UserService.isAdmin().then(res => res.data).then(res => {
+      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
+        localStorage.removeItem("token");
+        history.push("/");
+      }
+      else if (res.status === "OK") {
+        setIsAdmin(res.result.isAdmin);
+      }
+    })
+  }, []);
+
   return (
     <Grid container direction="column" className={classes.root}>
       <Grid item container className={classes.toolbox}>
@@ -57,22 +75,30 @@ function ExperimentSearch() {
             </Select>
           </FormControl>
         </Grid>
-        <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-          <FormControl className={classes.formcontrol}>
-            <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
-            <Select
-              labelId="user-experiment-platform-select-label"
-              id="user-experiment-platform-select"
-            >
-              <MenuItem value="jspsych">jsPsych</MenuItem>
-              <MenuItem value="labjs">Lab.js</MenuItem>
-              <MenuItem value="psychopy">PsychoPy</MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
-        <Grid item xs={12} md="auto" className={classes.filter}>
-          <NewButton />
-        </Grid>
+        {
+          isAdmin ? (
+            <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+              <FormControl className={classes.formcontrol}>
+                <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
+                <Select
+                  labelId="user-experiment-platform-select-label"
+                  id="user-experiment-platform-select"
+                >
+                  <MenuItem value="jspsych">jsPsych</MenuItem>
+                  <MenuItem value="labjs">Lab.js</MenuItem>
+                  <MenuItem value="psychopy">PsychoPy</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+          ) : null
+        }
+        {
+          isAdmin ? (
+            <Grid item xs={12} md="auto" className={classes.filter}>
+              <NewButton />
+            </Grid>
+          ) : null
+        }
       </Grid>
       <Grid item container className={classes.experiments}>
         {
