@@ -71,6 +71,16 @@ function ExperimentSearch() {
     })
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const handleCardClick = (e) => {
+    if (e.target.innerText === "Delete") {
+      setExperiments(old => {
+        return old.filter(oldExp =>
+          oldExp._id !== e.target.attributes.experimentId.value
+        )
+      })
+    }
+  }
+
   return loading ? (
     <div>Loading ...</div>
   ) : (
@@ -114,10 +124,10 @@ function ExperimentSearch() {
             ) : null
           }
         </Grid>
-        <Grid item container className={classes.experiments}>
+        <Grid item container className={classes.experiments} onClick={handleCardClick}>
           {
             experiments.map((experiment, index) => (
-              <Grid item xs={12} md={6} lg={2} key={index} className={classes.experiment}>
+              <Grid item xs={12} md={6} lg={2} key={`experiment_card_id_${index}`} className={classes.experiment}>
                 <ExperimentCard {...experiment} />
               </Grid>
             ))
