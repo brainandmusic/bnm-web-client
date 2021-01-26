@@ -1,31 +1,15 @@
 import React, { useState, useContext } from "react";
-import UserService from '../services/User';
 
 const AuthContext = React.createContext({
   isLoggedIn: false,
-  isAdmin: false,
 });
 
 export const useProvideUser = () => {
-  const [isLoggedIn] = useState(localStorage.getItem("token") ? true : false);
-
-  const signin = (email, password) => {
-    return UserService.signin(email, password);
-  }
-
-  const signup = (firstName, lastName, email, password) => {
-    return UserService.signup(firstName, lastName, email, password);
-  }
-
-  const signout = () => {
-    return UserService.signout();
-  }
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("token") ? true : false);
 
   return {
     isLoggedIn,
-    signin,
-    signup,
-    signout,
+    setIsLoggedIn,
   }
 };
 

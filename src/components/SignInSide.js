@@ -15,6 +15,7 @@ import Grid from '@material-ui/core/Grid';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
+import UserService from '../services/User';
 
 function Copyright() {
   return (
@@ -101,7 +102,7 @@ function SignInSide() {
   const handleLogin = (e) => {
     e.preventDefault();
     setSigningIn(true)
-    user.signin(email, password).then(res => {
+    UserService.signin(email, password).then(res => {
       setSigningIn(false);
       return res.data;
     }).then(res => {

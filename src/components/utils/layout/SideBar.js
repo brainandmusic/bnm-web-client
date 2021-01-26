@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteMatch } from "react-router-dom";
+import { useRouteMatch, useHistory } from "react-router-dom";
+import { useUser } from '../../../contexts/AuthContext';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -17,6 +18,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
+import UserService from '../../../services/User';
 
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;
@@ -102,6 +104,8 @@ const useStyles = makeStyles((theme) => ({
 
 function SideBar({ variant, open, handleClose }) {
   const classes = useStyles();
+  const history = useHistory();
+  const user = useUser();
   const { path } = useRouteMatch();
   const [expand, setExpand] = useState(true);
   const [menu, setMenu] = useState([]);
@@ -111,6 +115,15 @@ function SideBar({ variant, open, handleClose }) {
   }, [])
 
   const handleToggle = () => setExpand(old => !old);
+
+  const handleLogout = () => {
+    handleClose();
+    UserService.signout().then(() => {
+      user.setIsLoggedIn(false);
+      localStorage.removeItem("token");
+      history.push("/login");
+    });
+  }
 
   return (
     <Drawer
@@ -134,7 +147,7 @@ function SideBar({ variant, open, handleClose }) {
         <List className={classes.sectionMobile}>
           <ListItem className={classes.justifyContentSpaceBetween}>
             <Avatar src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Wenhe+Qi" />
-            <Button size="small" variant="outlined">Exit</Button>
+            <Button size="small" variant="outlined" onClick={handleLogout}>Exit</Button>
           </ListItem>
         </List>
       </div>

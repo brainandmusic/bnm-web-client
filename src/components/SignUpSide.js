@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useUser } from '../contexts/AuthContext';
 import { useHistory } from 'react-router-dom';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
@@ -15,6 +14,7 @@ import Paper from '@material-ui/core/Paper';
 import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
+import UserService from '../services/User';
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -77,7 +77,6 @@ const useStyles = makeStyles((theme) => ({
 
 function SignUpSide() {
   const classes = useStyles();
-  const user = useUser();
   const history = useHistory();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -168,7 +167,7 @@ function SignUpSide() {
     }
     if (validForm) {
       setSigningUp(true);
-      user.signup(
+      UserService.signup(
         firstName,
         lastName,
         email,

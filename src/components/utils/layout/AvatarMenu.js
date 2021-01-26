@@ -5,6 +5,7 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import UserService from '../../../services/User';
 
 function AvatarMenu() {
   const user = useUser();
@@ -21,9 +22,8 @@ function AvatarMenu() {
 
   const handleLogout = () => {
     handleClose();
-    user.signout().then(() => {
+    UserService.signout().then(() => {
       user.setIsLoggedIn(false);
-      user.setIsAdmin(false);
       localStorage.removeItem("token");
       history.push("/login");
     });
