@@ -22,28 +22,26 @@ import UserService from '../../../services/User';
 
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;
-const menu = [
+const menuArr = [
   {
     icon: <CategoryIcon />,
     text: "Studies",
     href: "/studies",
+    permissions: ["admin"],
   },
   {
     icon: <AssignmentIcon />,
     text: "Experiments",
     href: "/experiments",
+    permissions: ["participant", "admin"]
   },
   {
     icon: <SettingsIcon />,
     text: "Settings",
-    href: "/settings"
+    href: "/settings",
+    permissions: ["participant", "admin"]
   },
 ];
-
-const getMenu = () => {
-  // TODO: check user access right
-  return menu;
-}
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -108,11 +106,31 @@ function SideBar({ variant, open, handleClose }) {
   const user = useUser();
   const { path } = useRouteMatch();
   const [expand, setExpand] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [menu, setMenu] = useState([]);
 
   useEffect(() => {
-    setMenu(getMenu());
-  }, [])
+    UserService.isAdmin().then(res => res.data).then(res => {
+      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
+        localStorage.removeItem("token");
+        history.push("/");
+      }
+      else if (res.status === "OK") {
+        setIsAdmin(res.result.isAdmin);
+      }
+    })
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const newMenu = [];
+    menuArr.forEach((m) => {
+      if ((m.permissions.includes("admin") && isAdmin) ||
+        m.permissions.includes("participant")) {
+        newMenu.push(m);
+      }
+    });
+    setMenu(newMenu);
+  }, [isAdmin]);
 
   const handleToggle = () => setExpand(old => !old);
 
