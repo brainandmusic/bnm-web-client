@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -10,7 +12,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import UserService from '../../../services/User';
 
 const useStyles = makeStyles({
   root: {
@@ -29,8 +31,22 @@ const useStyles = makeStyles({
 
 function ExperimentCard() {
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const menuOpen = Boolean(anchorEl);
+
+  useEffect(() => {
+    UserService.isAdmin().then(res => res.data).then(res => {
+      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
+        localStorage.removeItem("token");
+        history.push("/");
+      }
+      else if (res.status === "OK") {
+        setIsAdmin(res.result.isAdmin);
+      }
+    })
+  }, []);
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -49,9 +65,13 @@ function ExperimentCard() {
     window.open(`${process.env.PUBLIC_URL}/experiments/runner/labjs/`, "", windowFeatures);
   }
 
+  const handleConfigClick = () => {
+    alert('go to config experiment page');
+  }
+
   return (
     <Card className={classes.root}>
-      <CardActionArea>
+      <CardActionArea onClick={isAdmin ? handleConfigClick : handleRunClick}>
         <CardContent>
           <Typography variant="subtitle2" color="textSecondary">
             Platform
@@ -65,41 +85,51 @@ function ExperimentCard() {
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="start experiment" onClick={handleRunClick}>
-          <PlayArrowIcon />
-        </IconButton>
-        <IconButton aria-label="config experiment">
-          <TuneIcon />
-        </IconButton>
-        <IconButton
-          aria-label="more options"
-          aria-controls="expend-menu"
-          aria-haspopup="true"
-          className={classes.expend}
-          onClick={handleMenuClick}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="expend-menu"
-          anchorEl={anchorEl}
-          getContentAnchorEl={null}
-          keepMounted
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={menuOpen}
-          onClose={handleMenuClose}
-        >
-          <MenuItem >
-            Delete
-          </MenuItem>
-        </Menu>
+        {
+          isAdmin ? null : (
+            <IconButton aria-label="start experiment" onClick={handleRunClick}>
+              <PlayArrowIcon />
+            </IconButton>
+          )
+        }
+        {
+          isAdmin ? (
+            <>
+              <IconButton aria-label="config experiment" onClick={handleConfigClick}>
+                <TuneIcon />
+              </IconButton>
+              <IconButton
+                aria-label="more options"
+                aria-controls="expend-menu"
+                aria-haspopup="true"
+                className={classes.expend}
+                onClick={handleMenuClick}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="expend-menu"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                keepMounted
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={menuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem >
+                  Delete
+                </MenuItem>
+              </Menu>
+            </>
+          ) : null
+        }
       </CardActions>
     </Card >
   );

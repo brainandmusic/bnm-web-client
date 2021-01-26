@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import { useUser } from '../../../contexts/AuthContext';
 import ExperimentCard from './ExperimentCard';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
