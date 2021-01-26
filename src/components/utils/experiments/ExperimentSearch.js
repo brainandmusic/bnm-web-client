@@ -75,7 +75,7 @@ function ExperimentSearch() {
     if (e.target.innerText === "Delete") {
       setExperiments(old => {
         return old.filter(oldExp =>
-          oldExp._id !== e.target.attributes.experimentId.value
+          oldExp._id !== e.target.attributes.experimentid.value
         )
       })
     }

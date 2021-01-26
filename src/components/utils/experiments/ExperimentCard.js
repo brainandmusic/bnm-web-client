@@ -127,7 +127,7 @@ function ExperimentCard({ name, description, platform, _id }) {
                 open={menuOpen}
                 onClose={handleMenuClose}
               >
-                <MenuItem onClick={handleMenuClose} experimentId={_id}>
+                <MenuItem onClick={handleMenuClose} experimentid={_id}>
                   Delete
                 </MenuItem>
               </Menu>

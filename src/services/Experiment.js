@@ -4,7 +4,7 @@ import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class ExperimentService {
   static getExperiments(filter = {}, projection = {}, options = {}) {
-    const url = `${BACKEND_API_BASE_URL}/experiment/get`;
+    const url = `${BACKEND_API_BASE_URL}/experiment/card/get`;
     const reqOptions = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
