@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import ExperimentCard from './ExperimentCard';
+import ExperimentService from '../../../services/Experiment';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -45,6 +46,17 @@ function ExperimentSearch() {
   const classes = useStyles();
   const history = useHistory();
   const [isAdmin, setIsAdmin] = useState(false);
+  const [experiments, setExperiments] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const loadAdminExperiments = async () => {
+    let res = await ExperimentService.getExperiments();
+    res = res.data;
+    if (res.status === "OK") {
+      setExperiments(res.result);
+    }
+    setLoading(false);
+  }
 
   useEffect(() => {
     UserService.isAdmin().then(res => res.data).then(res => {
@@ -54,62 +66,65 @@ function ExperimentSearch() {
       }
       else if (res.status === "OK") {
         setIsAdmin(res.result.isAdmin);
+        res.result.isAdmin && loadAdminExperiments();
       }
     })
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return (
-    <Grid container direction="column" className={classes.root}>
-      <Grid item container className={classes.toolbox}>
-        <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-          <FormControl className={classes.formcontrol}>
-            <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
-            <Select
-              labelId="user-experiment-status-select-label"
-              id="user-experiment-status-select"
-              value="Pending"
-            >
-              <MenuItem value="Pending">Pending</MenuItem>
-              <MenuItem value="Complete">Complete</MenuItem>
-            </Select>
-          </FormControl>
+  return loading ? (
+    <div>Loading ...</div>
+  ) : (
+      <Grid container direction="column" className={classes.root}>
+        <Grid item container className={classes.toolbox}>
+          <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+            <FormControl className={classes.formcontrol}>
+              <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
+              <Select
+                labelId="user-experiment-status-select-label"
+                id="user-experiment-status-select"
+                value="Pending"
+              >
+                <MenuItem value="Pending">Pending</MenuItem>
+                <MenuItem value="Complete">Complete</MenuItem>
+              </Select>
+            </FormControl>
+          </Grid>
+          {
+            isAdmin ? (
+              <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+                <FormControl className={classes.formcontrol}>
+                  <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
+                  <Select
+                    labelId="user-experiment-platform-select-label"
+                    id="user-experiment-platform-select"
+                  >
+                    <MenuItem value="jspsych">jsPsych</MenuItem>
+                    <MenuItem value="labjs">Lab.js</MenuItem>
+                    <MenuItem value="psychopy">PsychoPy</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            ) : null
+          }
+          {
+            isAdmin ? (
+              <Grid item xs={12} md="auto" className={classes.filter}>
+                <NewButton />
+              </Grid>
+            ) : null
+          }
         </Grid>
-        {
-          isAdmin ? (
-            <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-              <FormControl className={classes.formcontrol}>
-                <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
-                <Select
-                  labelId="user-experiment-platform-select-label"
-                  id="user-experiment-platform-select"
-                >
-                  <MenuItem value="jspsych">jsPsych</MenuItem>
-                  <MenuItem value="labjs">Lab.js</MenuItem>
-                  <MenuItem value="psychopy">PsychoPy</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-          ) : null
-        }
-        {
-          isAdmin ? (
-            <Grid item xs={12} md="auto" className={classes.filter}>
-              <NewButton />
-            </Grid>
-          ) : null
-        }
+        <Grid item container className={classes.experiments}>
+          {
+            experiments.map((experiment, index) => (
+              <Grid item xs={12} md={6} lg={2} key={index} className={classes.experiment}>
+                <ExperimentCard {...experiment} />
+              </Grid>
+            ))
+          }
+        </Grid>
       </Grid>
-      <Grid item container className={classes.experiments}>
-        {
-          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((card, index) => (
-            <Grid item xs={12} md={6} lg={2} key={index} className={classes.experiment}>
-              <ExperimentCard />
-            </Grid>
-          ))
-        }
-      </Grid>
-    </Grid>
-  );
+    );
 }
 
 export default ExperimentSearch;

@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ExperimentCard() {
+function ExperimentCard({ name, description, platform, _id }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -46,7 +46,7 @@ function ExperimentCard() {
         setIsAdmin(res.result.isAdmin);
       }
     })
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -62,7 +62,7 @@ function ExperimentCard() {
     // 2) create a modal to show the user progress/status of the running experiment in another window
     // 3) when user completes the experiment, upload response to database
     const windowFeatures = "menubar=no,location=no,toolbar=no,resizable=yes";
-    window.open(`${process.env.PUBLIC_URL}/experiments/runner/labjs/`, "", windowFeatures);
+    window.open(`${process.env.PUBLIC_URL}/experiments/runner/${platform.replace(/\./g, "").toLowerCase()}/`, "", windowFeatures);
   }
 
   const handleConfigClick = () => {
@@ -73,15 +73,19 @@ function ExperimentCard() {
     <Card className={classes.root}>
       <CardActionArea onClick={isAdmin ? handleConfigClick : handleRunClick}>
         <CardContent>
-          <Typography variant="subtitle2" color="textSecondary">
-            Platform
-          </Typography>
+          {
+            isAdmin ? (
+              <Typography variant="subtitle2" color="textSecondary">
+                {platform}
+              </Typography>
+            ) : null
+          }
           <Typography variant="subtitle1" component="h2" gutterBottom >
-            Experiment Title
+            {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" className={classes.description}>
-            Experiment description
-        </Typography>
+            {description || ""}
+          </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
