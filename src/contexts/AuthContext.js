@@ -7,9 +7,7 @@ const AuthContext = React.createContext({
 });
 
 export const useProvideUser = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("token") ? true : false);
-  // TODO: get admin status from server
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn] = useState(localStorage.getItem("token") ? true : false);
 
   const signin = (email, password) => {
     return UserService.signin(email, password);
@@ -25,9 +23,6 @@ export const useProvideUser = () => {
 
   return {
     isLoggedIn,
-    isAdmin,
-    setIsAdmin,
-    setIsLoggedIn,
     signin,
     signup,
     signout,
