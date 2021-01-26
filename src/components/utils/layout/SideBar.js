@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
+import { useRouteMatch, useHistory } from "react-router-dom";
+import { useUser } from '../../../contexts/AuthContext';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import Button from '@material-ui/core/Button';
+import CategoryIcon from '@material-ui/icons/Category';
 import Divider from '@material-ui/core/Divider';
 import Drawer from '@material-ui/core/Drawer';
 import IconButton from '@material-ui/core/IconButton';
@@ -15,26 +18,30 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
+import UserService from '../../../services/User';
 
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;
-const menu = [
+const menuArr = [
+  {
+    icon: <CategoryIcon />,
+    text: "Studies",
+    href: "/studies",
+    permissions: ["admin"],
+  },
   {
     icon: <AssignmentIcon />,
     text: "Experiments",
     href: "/experiments",
+    permissions: ["participant", "admin"]
   },
   {
     icon: <SettingsIcon />,
     text: "Settings",
-    href: "/settings"
+    href: "/settings",
+    permissions: ["participant", "admin"]
   },
 ];
-
-const getMenu = () => {
-  // TODO: check user access right
-  return menu;
-}
 
 const useStyles = makeStyles((theme) => ({
   drawer: {
@@ -95,14 +102,46 @@ const useStyles = makeStyles((theme) => ({
 
 function SideBar({ variant, open, handleClose }) {
   const classes = useStyles();
+  const history = useHistory();
+  const user = useUser();
+  const { path } = useRouteMatch();
   const [expand, setExpand] = useState(true);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [menu, setMenu] = useState([]);
 
   useEffect(() => {
-    setMenu(getMenu());
-  }, [])
+    UserService.isAdmin().then(res => res.data).then(res => {
+      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
+        localStorage.removeItem("token");
+        history.push("/");
+      }
+      else if (res.status === "OK") {
+        setIsAdmin(res.result.isAdmin);
+      }
+    })
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    const newMenu = [];
+    menuArr.forEach((m) => {
+      if ((m.permissions.includes("admin") && isAdmin) ||
+        m.permissions.includes("participant")) {
+        newMenu.push(m);
+      }
+    });
+    setMenu(newMenu);
+  }, [isAdmin]);
 
   const handleToggle = () => setExpand(old => !old);
+
+  const handleLogout = () => {
+    handleClose();
+    UserService.signout().then(() => {
+      user.setIsLoggedIn(false);
+      localStorage.removeItem("token");
+      history.push("/login");
+    });
+  }
 
   return (
     <Drawer
@@ -126,7 +165,7 @@ function SideBar({ variant, open, handleClose }) {
         <List className={classes.sectionMobile}>
           <ListItem className={classes.justifyContentSpaceBetween}>
             <Avatar src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Wenhe+Qi" />
-            <Button size="small" variant="outlined">Exit</Button>
+            <Button size="small" variant="outlined" onClick={handleLogout}>Exit</Button>
           </ListItem>
         </List>
       </div>
@@ -142,7 +181,7 @@ function SideBar({ variant, open, handleClose }) {
             >
               <ListItem
                 button
-              // selected={path.toLowerCase().startsWith(`/${item.text.toLowerCase()}`)}
+                selected={path.toLowerCase().startsWith(item.href)}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
                 <ListItemText primary={item.text} />

@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
+import AvatarMenu from './AvatarMenu';
 import AppBar from '@material-ui/core/AppBar';
 import IconButton from '@material-ui/core/IconButton';
 import MenuIcon from '@material-ui/icons/Menu';
@@ -53,7 +53,7 @@ function MenuAppBar({ handleMenuClick, menu, title }) {
         </Typography>
         <div className={classes.grow} />
         <div className={classes.sectionDesktop}>
-          <Avatar src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Wenhe+Qi" />
+          <AvatarMenu />
         </div>
       </Toolbar>
       {menu}

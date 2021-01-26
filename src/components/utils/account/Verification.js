@@ -1,20 +1,9 @@
-/*
- * Welcome
- *
- * Welcome component first checks if the account associated with the
- * email is a newly registered account and not verified.
- * 
- * If account is not found or has already been verified, display
- * error accordingly.
- * 
- * If account is newly registered, display welcome message and show
- * the resend button in case user doesn't receive the verification
- * email.
- */
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
+import { useUser } from '../../../contexts/AuthContext';
+import UserService from '../../../services/User';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import Paper from '@material-ui/core/Paper';
 import Typograph from '@material-ui/core/Typography';
@@ -55,30 +44,66 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Verification() {
-  // const { email, token } = useParams();
+  const { email, token } = useParams();
   const history = useHistory();
   const classes = useStyles();
+  const user = useUser();
+  const [verifying, setVerifying] = useState(false);
+  const [error, setError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleClick = () => history.push('/');
+
+  useEffect(() => {
+    setVerifying(true);
+    UserService.verifyEmail(email, token).then(res => {
+      setVerifying(false);
+      return res.data;
+    }).then(res => {
+      if (res.status !== "OK") {
+        setError(true);
+        setErrorMessage(res.message);
+        return;
+      }
+      localStorage.setItem("token", res.result.token);
+      user.setIsLoggedIn(true);
+    })
+  }, [email, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={classes.root}>
       <Paper className={classes.paper} elevation={3}>
-        <DoneAllIcon className={classes.doneAllIcon} />
-        <Typograph className={classes.thanks} component="h3" gutterBottom variant="h3">
-          GREAT!
-        </Typograph>
-        <Typograph gutterBottom>
-          You are all set!
-        </Typograph>
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-          onClick={handleClick}
-        >
-          GO TO HOMEPAGE
-        </Button>
+        {
+          verifying ?
+            (
+              <Typograph className={classes.thanks} component="h3" gutterBottom variant="h3">
+                Verifying...
+              </Typograph>
+            ) :
+            error ?
+              (
+                <div>{errorMessage}</div>
+              ) :
+              (
+                <>
+                  <DoneAllIcon className={classes.doneAllIcon} />
+                  <Typograph className={classes.thanks} component="h3" gutterBottom variant="h3">
+                    GREAT!
+                </Typograph>
+                  <Typograph gutterBottom>
+                    You are all set!
+                </Typograph>
+                  <Button
+                    className={classes.button}
+                    variant="contained"
+                    color="primary"
+                    onClick={handleClick}
+                  >
+                    GO TO HOMEPAGE
+                </Button>
+                </>
+              )
+        }
       </Paper>
     </div>
   );
