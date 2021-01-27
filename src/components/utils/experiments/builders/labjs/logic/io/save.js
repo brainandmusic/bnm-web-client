@@ -88,6 +88,7 @@ export const saveToDatabase = async (state, experimentId, { exportedComponent = 
   // stateJSON is a string type
   const stateJSON = stateToJSON(state, exportedComponent, { removeInternals })
   const updatedExp = {};
+  updatedExp.experimentId = experimentId;
   updatedExp.name = state.components.root.metadata.title;
   updatedExp.description = state.components.root.metadata.description;
   updatedExp.data = stateJSON;
