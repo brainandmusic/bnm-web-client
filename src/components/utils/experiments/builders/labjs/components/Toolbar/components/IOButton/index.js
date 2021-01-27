@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useStore } from 'react-redux'
+import { useParams, useHistory } from 'react-router-dom'
 
 import { ButtonDropdown, Button, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap'
 
@@ -7,7 +8,7 @@ import Uploader from '../../../Uploader'
 import Icon from '../../../Icon'
 
 import { fromJSON } from '../../../../logic/io/load'
-import { stateToDownload } from '../../../../logic/io/save'
+import { stateToDownload, saveToDatabase } from '../../../../logic/io/save'
 import downloadStaticLocal from '../../../../logic/io/export/modifiers/local'
 // import downloadStaticJatos from '../../../../logic/io/export/modifiers/jatos'
 // import downloadStaticPavlovia from '../../../../logic/io/export/modifiers/pavlovia'
@@ -18,17 +19,26 @@ import downloadStaticLocal from '../../../../logic/io/export/modifiers/local'
 // TODO: Refactor dispatch calls to action creators
 
 const IOButton = () => {
+  const { experimentId, platform } = useParams();
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const store = useStore()
+  const history = useHistory()
 
   return <ButtonDropdown
     isOpen={dropdownOpen}
     toggle={() => setDropdownOpen(!dropdownOpen)}
   >
     <Button id="caret" outline color="secondary"
-      onClick={e => stateToDownload(
-        store.getState(), { removeInternals: e.shiftKey }
-      )}
+      onClick={(e) => {
+        saveToDatabase(
+          store.getState(), experimentId, { removeInternals: e.shiftKey }
+        ).then(res => {
+          if (!experimentId) {
+            // this is a new experiment, redirect to its page after save for the first time
+            history.push(`/experiments/builder/platform/${platform}/experiment/${res._id}`)
+          }
+        })
+      }}
     >
       <Icon icon="save" weight="l" fallbackWeight="r" />
     </Button>
@@ -38,15 +48,6 @@ const IOButton = () => {
     />
     <DropdownMenu>
       <DropdownItem header>Experiment</DropdownItem>
-      <DropdownItem
-        onClick={() => {
-          if (window.confirm('Are you sure you want to reset the experiment?')) {
-            store.dispatch({ type: 'RESET_STATE' })
-          }
-        }}
-      >
-        New
-      </DropdownItem>
       <Uploader
         accept="application/json"
         multiple={false}
@@ -73,6 +74,15 @@ const IOButton = () => {
       >
         Open
       </Uploader>
+      <DropdownItem
+        onClick={() => {
+          if (window.confirm('Are you sure you want to reset the experiment?')) {
+            store.dispatch({ type: 'RESET_STATE' })
+          }
+        }}
+      >
+        Reset to Empty
+      </DropdownItem>
       <DropdownItem
         onClick={e => stateToDownload(
           store.getState(), { removeInternals: e.shiftKey }

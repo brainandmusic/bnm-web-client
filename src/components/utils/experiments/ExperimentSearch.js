@@ -54,17 +54,22 @@ function ExperimentSearch() {
 
   const handleDelExpOpen = () => setDelExpOpen(true);
   const handleDelExpClose = () => setDelExpOpen(false);
-  const handleDelExpConfirm = () => {
+  const handleDelExpConfirm = async () => {
     handleDelExpClose();
-    setExperiments(old => {
-      return old.filter(oldExp =>
-        oldExp._id !== delExpId
-      )
-    });
+    let res = await ExperimentService.deleteExperiment(delExpId);
+    res = res.data;
+    // TODO: add snackbar to show the delete result using res
+    if (res.status === "OK") {
+      setExperiments(old => {
+        return old.filter(oldExp =>
+          oldExp._id !== delExpId
+        )
+      });
+    }
   }
 
   const loadAdminExperiments = async () => {
-    let res = await ExperimentService.getExperiments();
+    let res = await ExperimentService.getExperimentCards();
     res = res.data;
     if (res.status === "OK") {
       setExperiments(res.result);

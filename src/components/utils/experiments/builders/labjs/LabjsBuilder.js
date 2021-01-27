@@ -26,6 +26,8 @@ import installPreviewWorker from './logic/io/preview/worker'
 import { SystemContextProvider } from './components/System'
 /* eslint-enable import/first */
 
+import ExperimentService from '../../../../../services/Experiment';
+
 const exp_data = {
   "components": {
     "1": {
@@ -120,7 +122,7 @@ const exp_data = {
           ]
         ]
       },
-      "title": "load from json",
+      "title": "load from local json",
       "_tab": "Parameters"
     },
     "root": {
@@ -253,14 +255,22 @@ function LabjsBuilder({ eid }) {
   }, []);
 
   useEffect(() => {
+    // TODO: there are only two cases currently: 1) new experiment 2) config an existing experiment
     if (store && eid) {
-      // load experiment data from server
-      const state = fromObject(exp_data)
-      console.log(state)
-      // Hydrate store from resulting object
-      store.dispatch({
-        type: 'HYDRATE', state,
-      })
+      // TODO: load experiment data from server
+      ExperimentService.getExperiment(eid).then(res => res.data).then(res => {
+        // const state = fromObject(JSON.parse(res.result.data));
+        const state = fromObject(JSON.parse(exp_data));
+        console.log(res);
+        // Hydrate store from resulting object
+        store.dispatch({
+          type: 'HYDRATE', state,
+        });
+      });
+
+    }
+    else if (store) {
+      store.dispatch({ type: 'RESET_STATE' });
     }
   }, [eid, store]);
 

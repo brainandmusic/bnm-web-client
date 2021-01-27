@@ -6,10 +6,12 @@ import { children } from '../tree'
 import { makeFilename } from './filename'
 import { embeddedFiles } from '../util/files'
 
-export const stateToJSON = (state, exportedComponent='root',
-  { removeInternals=false }={}) => {
+import ExperimentService from '../../../../../../../services/Experiment';
+
+export const stateToJSON = (state, exportedComponent = 'root',
+  { removeInternals = false } = {}) => {
   const { version, components: allComponents,
-    files: { files: allFiles, bundledFiles }} = state
+    files: { files: allFiles, bundledFiles } } = state
 
   // From all available components,
   // include only the root, and those
@@ -29,7 +31,7 @@ export const stateToJSON = (state, exportedComponent='root',
   // the single child of the root component.
   components['root'].children = exportedComponent === 'root'
     ? allComponents['root'].children
-    : [ exportedComponent ]
+    : [exportedComponent]
 
   // Remove internal options relating to UI state
   // (that start with an underscore)
@@ -57,8 +59,8 @@ export const stateToJSON = (state, exportedComponent='root',
   }, null, 2)
 }
 
-export const stateToDownload = (state, { exportedComponent='root',
-  filenameOverride=null, removeInternals=false }={}) => {
+export const stateToDownload = (state, { exportedComponent = 'root',
+  filenameOverride = null, removeInternals = false } = {}) => {
   const stateJSON = stateToJSON(state, exportedComponent, { removeInternals })
 
   // Determine filename if not set explicitly
@@ -67,17 +69,31 @@ export const stateToDownload = (state, { exportedComponent='root',
     const fileprefix = exportedComponent === 'root'
       ? makeFilename(state)
       : makeFilename(state) + '-' +
-        state.components[exportedComponent].title.toLowerCase()
+      state.components[exportedComponent].title.toLowerCase()
     const timestamp = moment().format('YYYY-MM-DD--HH:mm')
-    filename = `${ fileprefix }-${ timestamp }.study.json`
+    filename = `${fileprefix}-${timestamp}.study.json`
   } else {
     filename = filenameOverride
   }
 
   // Output JSON file
   const output = new Blob(
-    [ stateJSON ],
+    [stateJSON],
     { type: 'application/json;charset=utf-8' }
   )
   return saveAs(output, filename)
+}
+
+export const saveToDatabase = async (state, experimentId, { exportedComponent = 'root', removeInternals = false } = {}) => {
+  // stateJSON is a string type
+  const stateJSON = stateToJSON(state, exportedComponent, { removeInternals })
+  const updatedExp = {};
+  updatedExp.name = state.components.root.metadata.title;
+  updatedExp.description = state.components.root.metadata.description;
+  updatedExp.data = JSON.stringify(stateJSON);
+  updatedExp.platform = "lab.js";
+  !experimentId && (updatedExp.createDate = Date.now());
+
+  const res = await ExperimentService.updateExperiment(updatedExp);
+  return res.data.result;
 }

@@ -66,7 +66,7 @@ function ExperimentCard({ name, description, platform, _id }) {
   }
 
   const handleConfigClick = () => {
-    alert('go to config experiment page');
+    history.push(`/experiments/builder/platform/${platform.replace(/\./g, "").toLowerCase()}/experiment/${_id}`)
   }
 
   return (
