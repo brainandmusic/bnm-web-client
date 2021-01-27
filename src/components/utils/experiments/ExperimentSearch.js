@@ -77,6 +77,11 @@ function ExperimentSearch() {
     setLoading(false);
   }
 
+  const loadParticipantExperiments = async () => {
+    // TODO: load from server
+    setLoading(false);
+  }
+
   useEffect(() => {
     UserService.isAdmin().then(res => res.data).then(res => {
       if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
@@ -86,6 +91,7 @@ function ExperimentSearch() {
       else if (res.status === "OK") {
         setIsAdmin(res.result.isAdmin);
         res.result.isAdmin && loadAdminExperiments();
+        !res.result.isAdmin && loadParticipantExperiments();
       }
     })
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
