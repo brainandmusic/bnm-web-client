@@ -57,7 +57,7 @@
   },
   "scripts": {
     "start": "yarn run static:library && react-scripts start",
-    "build": "react-scripts build",
+    "build": "yarn run static:library && react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "static:library": "shx mkdir -p public/api/_defaultStatic/lib/ && shx cp -R ./node_modules/lab.js/dist/labjs-starterkit/lib/* public/api/_defaultStatic/lib/"
