@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
+import DelExpModal from './DelExpModal';
 import ExperimentCard from './ExperimentCard';
 import ExperimentService from '../../../services/Experiment';
 import FormControl from '@material-ui/core/FormControl';
@@ -48,6 +49,19 @@ function ExperimentSearch() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [experiments, setExperiments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [delExpId, setDelExpId] = useState("");
+  const [delExpOpen, setDelExpOpen] = useState(false);
+
+  const handleDelExpOpen = () => setDelExpOpen(true);
+  const handleDelExpClose = () => setDelExpOpen(false);
+  const handleDelExpConfirm = () => {
+    handleDelExpClose();
+    setExperiments(old => {
+      return old.filter(oldExp =>
+        oldExp._id !== delExpId
+      )
+    });
+  }
 
   const loadAdminExperiments = async () => {
     let res = await ExperimentService.getExperiments();
@@ -73,11 +87,8 @@ function ExperimentSearch() {
 
   const handleCardClick = (e) => {
     if (e.target.innerText === "Delete") {
-      setExperiments(old => {
-        return old.filter(oldExp =>
-          oldExp._id !== e.target.attributes.experimentid.value
-        )
-      })
+      setDelExpId(e.target.attributes.experimentid.value);
+      handleDelExpOpen()
     }
   }
 
@@ -133,6 +144,10 @@ function ExperimentSearch() {
             ))
           }
         </Grid>
+        <DelExpModal
+          open={delExpOpen}
+          handleClose={handleDelExpClose}
+          handleDelete={handleDelExpConfirm} />
       </Grid>
     );
 }
