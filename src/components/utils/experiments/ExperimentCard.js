@@ -1,4 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { useHistory } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardActionArea from '@material-ui/core/CardActionArea';
@@ -10,7 +12,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import UserService from '../../../services/User';
 
 const useStyles = makeStyles({
   root: {
@@ -27,10 +29,24 @@ const useStyles = makeStyles({
   }
 });
 
-function ExperimentCard() {
+function ExperimentCard({ name, description, platform, _id }) {
   const classes = useStyles();
+  const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const menuOpen = Boolean(anchorEl);
+
+  useEffect(() => {
+    UserService.isAdmin().then(res => res.data).then(res => {
+      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
+        localStorage.removeItem("token");
+        history.push("/");
+      }
+      else if (res.status === "OK") {
+        setIsAdmin(res.result.isAdmin);
+      }
+    })
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -46,60 +62,78 @@ function ExperimentCard() {
     // 2) create a modal to show the user progress/status of the running experiment in another window
     // 3) when user completes the experiment, upload response to database
     const windowFeatures = "menubar=no,location=no,toolbar=no,resizable=yes";
-    window.open(`${process.env.PUBLIC_URL}/experiments/runner/labjs/`, "", windowFeatures);
+    window.open(`${process.env.PUBLIC_URL}/experiments/runner/${platform.replace(/\./g, "").toLowerCase()}/`, "", windowFeatures);
+  }
+
+  const handleConfigClick = () => {
+    history.push(`/experiments/builder/platform/${platform.replace(/\./g, "").toLowerCase()}/experiment/${_id}`)
   }
 
   return (
     <Card className={classes.root}>
-      <CardActionArea>
+      <CardActionArea onClick={isAdmin ? handleConfigClick : handleRunClick}>
         <CardContent>
-          <Typography variant="subtitle2" color="textSecondary">
-            Platform
-          </Typography>
+          {
+            isAdmin ? (
+              <Typography variant="subtitle2" color="textSecondary">
+                {platform}
+              </Typography>
+            ) : null
+          }
           <Typography variant="subtitle1" component="h2" gutterBottom >
-            Experiment Title
+            {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" className={classes.description}>
-            Experiment description
-        </Typography>
+            {description || ""}
+          </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="start experiment" onClick={handleRunClick}>
-          <PlayArrowIcon />
-        </IconButton>
-        <IconButton aria-label="config experiment">
-          <TuneIcon />
-        </IconButton>
-        <IconButton
-          aria-label="more options"
-          aria-controls="expend-menu"
-          aria-haspopup="true"
-          className={classes.expend}
-          onClick={handleMenuClick}
-        >
-          <MoreVertIcon />
-        </IconButton>
-        <Menu
-          id="expend-menu"
-          anchorEl={anchorEl}
-          getContentAnchorEl={null}
-          keepMounted
-          anchorOrigin={{
-            vertical: 'bottom',
-            horizontal: 'center',
-          }}
-          transformOrigin={{
-            vertical: 'top',
-            horizontal: 'right',
-          }}
-          open={menuOpen}
-          onClose={handleMenuClose}
-        >
-          <MenuItem >
-            Delete
-          </MenuItem>
-        </Menu>
+        {
+          isAdmin ? null : (
+            <IconButton aria-label="start experiment" onClick={handleRunClick}>
+              <PlayArrowIcon />
+            </IconButton>
+          )
+        }
+        {
+          isAdmin ? (
+            <>
+              <IconButton aria-label="config experiment" onClick={handleConfigClick}>
+                <TuneIcon />
+              </IconButton>
+              <IconButton
+                aria-label="more options"
+                aria-controls="expend-menu"
+                aria-haspopup="true"
+                className={classes.expend}
+                onClick={handleMenuClick}
+              >
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                id="expend-menu"
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                keepMounted
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+                open={menuOpen}
+                onClose={handleMenuClose}
+              >
+                <MenuItem onClick={handleMenuClose} experimentid={_id}>
+                  Delete
+                </MenuItem>
+              </Menu>
+            </>
+          ) : null
+        }
       </CardActions>
     </Card >
   );
