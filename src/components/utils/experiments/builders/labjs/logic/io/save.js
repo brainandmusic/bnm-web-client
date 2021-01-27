@@ -90,7 +90,7 @@ export const saveToDatabase = async (state, experimentId, { exportedComponent = 
   const updatedExp = {};
   updatedExp.name = state.components.root.metadata.title;
   updatedExp.description = state.components.root.metadata.description;
-  updatedExp.data = JSON.stringify(stateJSON);
+  updatedExp.data = stateJSON;
   updatedExp.platform = "lab.js";
   !experimentId && (updatedExp.createDate = Date.now());
 
