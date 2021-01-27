@@ -3,6 +3,15 @@ import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class UserService {
+  static getProfile() {
+    const url = `${BACKEND_API_BASE_URL}/user/profile`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      url,
+    };
+    return axios(options);
+  }
   static isAdmin() {
     const url = `${BACKEND_API_BASE_URL}/user/admin/get`;
     const options = {

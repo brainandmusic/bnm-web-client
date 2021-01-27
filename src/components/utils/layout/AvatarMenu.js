@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useUser } from '../../../contexts/AuthContext';
 import Avatar from '@material-ui/core/Avatar';
@@ -11,6 +11,18 @@ function AvatarMenu() {
   const user = useUser();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+
+  useEffect(() => {
+    UserService.getProfile().then(res => res.data.result).then(res => {
+      setFirstName(res.firstName);
+      setLastName(res.lastName);
+    }).catch(() => {
+      setFirstName("undefined");
+      setLastName("undefined");
+    })
+  }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -32,7 +44,7 @@ function AvatarMenu() {
   return (
     <div>
       <IconButton aria-controls="avatar-menu" aria-haspopup="true" onClick={handleClick}>
-        <Avatar src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Wenhe+Qi" />
+        <Avatar src={`https://ui-avatars.com/api/?color=fff&name=${firstName}+${lastName}`} />
       </IconButton>
       <Menu
         id="avatar-menu"
