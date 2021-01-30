@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Backdrop from '@material-ui/core/Backdrop';
 import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import Checkbox from '@material-ui/core/Checkbox';
+import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Grid from '@material-ui/core/Grid';
 import Modal from '@material-ui/core/Modal';
+import StudyService from '../../../services/Study';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { Divider } from '@material-ui/core';
-import psychopyLogo from '../../../images/psychopy-logo.png';
-import jspsychLogo from '../../../images/jspsych-logo.png';
-import labjsLogo from '../../../images/labjs-logo.png';
 
 const useStyles = makeStyles((theme) => ({
   button: {
@@ -23,17 +23,29 @@ const useStyles = makeStyles((theme) => ({
       width: "auto",
     },
   },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    width: "100%",
+    "& .MuiFormControl-root": {
+      marginTop: theme.spacing(2),
+    }
+  },
   modal: {
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
   },
   paper: {
-    margin: theme.spacing(0, 5),
+    margin: theme.spacing(0, 1),
     boxShadow: theme.shadows[5],
+    width: "100%",
     // remove the blue border when modal is first opened
     "&:focus": {
       outline: "none",
+    },
+    [theme.breakpoints.up("md")]: {
+      width: "500px",
     },
   },
   cancel: {
@@ -53,52 +65,49 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const platforms = [
-  {
-    src: psychopyLogo,
-    alt: "PsychoPy Logo",
-    name: "PsychoPy",
-    url: "/experiments/builder/platform/psychopy",
-  },
-  {
-    src: labjsLogo,
-    alt: "Lab.js Logo",
-    name: "Lab.js",
-    url: "/experiments/builder/platform/labjs",
-  },
-  {
-    src: jspsychLogo,
-    alt: "jsPsych Logo",
-    name: "jsPsych",
-    url: "/experiments/builder/platform/jspsych",
-  },
-]
-
-function Platform({ src, alt, name, url }) {
-  const classes = useStyles();
-  return (
-    <Button
-      variant="outlined"
-      startIcon={<Avatar src={src} alt={alt} />}
-      fullWidth
-      href={url}
-      className={classes.platform}
-    >
-      {name}
-    </Button>
-  );
-}
-
-function NewStudyButton() {
+function NewStudyButton({ onCreateCallback }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [studyName, setStudyName] = useState("");
+  const [studyDesc, setStudyDesc] = useState("");
+  const [studyStat, setStudyStat] = useState("private");
+
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
+    // reset each field
+    setStudyName("");
+    setStudyDesc("");
+    setStudyStat("private");
+    // close window
     setOpen(false);
   };
+
+  const handleCreateStudy = () => {
+    StudyService.createStudy({ name: studyName, description: studyDesc, status: studyStat }).then(res => res.data).then(res => {
+      onCreateCallback(res.status, res.result, res.message);
+      handleClose();
+    });
+  }
+
+  const handleStudyNameChange = (e) => {
+    setStudyName(e.target.value);
+  }
+
+  const handleStudyDescChange = (e) => {
+    setStudyDesc(e.target.value);
+  }
+
+  const handleStudyStatChange = (e) => {
+    if (e.target.checked) {
+      setStudyStat("public");
+    }
+    else {
+      setStudyStat("private");
+    }
+  }
 
   return (
     <>
@@ -128,29 +137,43 @@ function NewStudyButton() {
           <Card className={classes.paper} variant="outlined">
             <CardContent>
               <Typography variant="h5" component="h2" className={classes.title}>
-                Create a study
+                Create a Study
               </Typography>
               <Divider />
               <Grid container spacing={1} className={classes.platforms}>
-                {
-                  platforms.map((platform, index) => {
-                    return (
-                      <Grid item xs={12} md={6} key={`experiments_button_platform_selector_${index}_${platform.name}`}>
-                        <Platform
-                          src={platform.src}
-                          alt={platform.alt}
-                          name={platform.name}
-                          url={platform.url}
-                        />
-                      </Grid>
-                    );
-                  })
-                }
+                <form className={classes.form} noValidate autoComplete="off">
+                  <TextField
+                    id="form-new-study-name"
+                    label="Name"
+                    multiline
+                    rowsMax={2}
+                    placeholder="Study Name"
+                    variant="outlined"
+                    autoFocus
+                    required
+                    value={studyName}
+                    onChange={handleStudyNameChange}
+                  />
+                  <TextField
+                    id="form-new-study-description"
+                    label="Description"
+                    multiline
+                    rows={4}
+                    placeholder="This study is ..."
+                    variant="outlined"
+                    value={studyDesc}
+                    onChange={handleStudyDescChange}
+                  />
+                  <FormControlLabel
+                    control={<Checkbox value="public" color="primary" onChange={handleStudyStatChange} />}
+                    label="Public"
+                  />
+                </form>
               </Grid>
             </CardContent>
             <CardActions>
               <Button size="small" color="secondary" onClick={handleClose} className={classes.cancel}>Cancel</Button>
-              <Button size="small" color="primary">Create</Button>
+              <Button size="small" color="primary" onClick={handleCreateStudy}>Create</Button>
             </CardActions>
           </Card>
         </Fade>

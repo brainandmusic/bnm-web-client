@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   }
 });
 
-function StudyCard() {
+function StudyCard({ name, description, status }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -50,14 +50,14 @@ function StudyCard() {
       <CardActionArea onClick={handleConfig}>
         <CardContent>
           <Typography variant="subtitle2" color="textSecondary">
-            Status
+            {status}
           </Typography>
           <Typography variant="subtitle1" component="h2" gutterBottom >
-            Study Title
+            {name}
           </Typography>
           <Typography variant="body2" color="textSecondary" className={classes.description}>
-            Study description
-        </Typography>
+            {description}
+          </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
