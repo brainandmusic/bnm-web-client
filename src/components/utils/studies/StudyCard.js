@@ -27,7 +27,7 @@ const useStyles = makeStyles({
   }
 });
 
-function StudyCard({ name, description, status }) {
+function StudyCard({ _id, name, description, status }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -89,7 +89,7 @@ function StudyCard({ name, description, status }) {
           open={menuOpen}
           onClose={handleMenuClose}
         >
-          <MenuItem >
+          <MenuItem onClick={handleMenuClose} studyid={_id}>
             Delete
           </MenuItem>
         </Menu>
