@@ -80,7 +80,6 @@ function StudySearch() {
   useEffect(() => {
     StudyService.getStudies({}, { _id: 1, name: 1, description: 1, status: 1 }).then(res => res.data).then(res => {
       if (res.status === "OK") {
-        console.log(res.result);
         setStudies(res.result);
       }
       setLoading(false);
