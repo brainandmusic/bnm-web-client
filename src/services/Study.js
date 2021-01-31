@@ -14,6 +14,17 @@ class StudyService {
     return axios(options);
   }
 
+  static deleteStudies(filter) {
+    const url = `${BACKEND_API_BASE_URL}/study/delete`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      data: qs.stringify({ filter }),
+      url,
+    };
+    return axios(reqOptions);
+  }
+
   static getStudies(filter, projection) {
     const url = `${BACKEND_API_BASE_URL}/study/get`;
     const reqOptions = {

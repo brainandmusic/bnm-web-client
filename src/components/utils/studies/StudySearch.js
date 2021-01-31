@@ -55,7 +55,19 @@ function StudySearch() {
   const handleDelStudy = async () => {
     handleDelStudyModalClose();
     // delete and update
-    alert(`delete the study ${delStudyId}`)
+    StudyService.deleteStudies({ _id: delStudyId }).then(res => res.data).then(res => {
+      if (res.status === "OK" && res.result.deletedCount === 1) {
+        // delete was successful
+        console.log('delete was successsfull')
+        setStudies(old => {
+          return old.filter(oldStudy => oldStudy._id !== delStudyId)
+        });
+        // TODO: show snack to indicate operation was successful
+      }
+    }).catch(e => {
+      alert('Fail to delete this experiment. Please try again later');
+      console.log(e);
+    })
   }
 
   const handleStudyCardClick = (e) => {
@@ -66,8 +78,9 @@ function StudySearch() {
   }
 
   useEffect(() => {
-    StudyService.getStudies({}, {}).then(res => res.data).then(res => {
+    StudyService.getStudies({}, { _id: 1, name: 1, description: 1, status: 1 }).then(res => res.data).then(res => {
       if (res.status === "OK") {
+        console.log(res.result);
         setStudies(res.result);
       }
       setLoading(false);
