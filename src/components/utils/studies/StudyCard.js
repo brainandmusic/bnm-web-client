@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -42,7 +41,7 @@ function StudyCard({ _id, name, description, status }) {
   };
 
   const handleConfig = () => {
-    history.push('/studies/study/studyId');
+    history.push(`/studies/study/${_id}`);
   }
 
   return (
@@ -61,9 +60,6 @@ function StudyCard({ _id, name, description, status }) {
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="config study" onClick={handleConfig}>
-          <TuneIcon />
-        </IconButton>
         <IconButton
           aria-label="more options"
           aria-controls="expend-menu"
