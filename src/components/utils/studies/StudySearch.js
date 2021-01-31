@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import DelModal from '../DelModal';
-import FormControl from '@material-ui/core/FormControl';
+// import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
+// import InputLabel from '@material-ui/core/InputLabel';
+// import MenuItem from '@material-ui/core/MenuItem';
 import NewStudyButton from './NewStudyButton';
-import Select from '@material-ui/core/Select';
+// import Select from '@material-ui/core/Select';
 import StudyCard from './StudyCard';
 import StudyService from '../../../services/Study';
 
@@ -105,7 +105,7 @@ function StudySearch() {
   ) : (
       <Grid container direction="column" className={classes.root}>
         <Grid item container className={classes.toolbox}>
-          <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+          {/* <Grid item xs={12} md={2} lg={1} className={classes.filter}>
             <FormControl className={classes.formcontrol}>
               <InputLabel id="study-status-select-label">Status</InputLabel>
               <Select
@@ -117,7 +117,7 @@ function StudySearch() {
                 <MenuItem value="private">Private</MenuItem>
               </Select>
             </FormControl>
-          </Grid>
+          </Grid> */}
           <Grid item xs={12} md="auto" className={classes.filter}>
             <NewStudyButton onCreateCallback={handleNewStudyCreated} />
           </Grid>
