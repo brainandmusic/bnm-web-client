@@ -63,6 +63,7 @@ const useStyles = makeStyles((theme) => ({
   },
   membertable: {
     maxWidth: "100%",
+    marginBottom: theme.spacing(2),
   }
 }))
 
@@ -103,7 +104,6 @@ function Study() {
   const handleRemoveMember = (e) => {
     // talk to server
     // update local array
-    // alert(JSON.stringify(e.target));
     if (e.target.tagName === "path") { // svg button
       const memberId = e.target.closest("button").attributes.memberid.value;
       const filter = { _id: study._id };

@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import DelModal from '../DelModal';
-// import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-// import InputLabel from '@material-ui/core/InputLabel';
-// import MenuItem from '@material-ui/core/MenuItem';
 import NewStudyButton from './NewStudyButton';
-// import Select from '@material-ui/core/Select';
 import StudyCard from './StudyCard';
 import StudyService from '../../../services/Study';
+import UserService from '../../../services/User';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -43,6 +40,7 @@ const useStyles = makeStyles((theme) => ({
 
 function StudySearch() {
   const classes = useStyles();
+  const [userId, setUserId] = useState("");
   const [studies, setStudies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [delStudyId, setDelStudyId] = useState("");
@@ -78,13 +76,29 @@ function StudySearch() {
   }
 
   useEffect(() => {
-    StudyService.getStudies({}, { _id: 1, name: 1, description: 1, status: 1 }).then(res => res.data).then(res => {
+    UserService.getProfile().then(res => res.data).then(res => {
       if (res.status === "OK") {
-        setStudies(res.result);
+        setUserId(res.result._id);
       }
+      else {
+        setLoading(false);
+      }
+    }).catch((e) => {
+      // TODO: show snackbar about the error
       setLoading(false);
     })
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      StudyService.getStudies({ $or: [{ creator: userId }, { "members._id": userId }] }, { _id: 1, name: 1, description: 1, status: 1 }).then(res => res.data).then(res => {
+        if (res.status === "OK") {
+          setStudies(res.result);
+        }
+        setLoading(false);
+      })
+    }
+  }, [userId]);
 
   const handleNewStudyCreated = (cStatus, cResult, cMsg) => {
     console.log(cStatus);
