@@ -3,8 +3,10 @@ import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import ExperimentTable from './ExperimentTable';
 import MemberTable from './MemberTable';
 import NewMemberButton from './NewMemberButton';
+import NewExperimentButton from './NewExperimentButton';
 import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import StudyService from '../../../services/Study';
@@ -54,14 +56,14 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     marginBottom: theme.spacing(2)
   },
-  memberbutton: {
+  button: {
     marginBottom: theme.spacing(2),
   },
-  membertab: {
+  tab: {
     display: "flex",
     flexDirection: "column",
   },
-  membertable: {
+  table: {
     maxWidth: "100%",
     marginBottom: theme.spacing(2),
   }
@@ -74,6 +76,7 @@ function Study() {
   const [loading, setLoading] = useState(true);
   const [study, setStudy] = useState({});
   const [members, setMembers] = useState([]);
+  const [experiments, setExperiments] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -81,6 +84,7 @@ function Study() {
       if (res.status === "OK") {
         setStudy(res.result[0]);
         setMembers(res.result[0].members);
+        setExperiments(res.result[0].experiments);
         setLoading(false);
       }
     })
@@ -101,6 +105,17 @@ function Study() {
     })
   }
 
+  const handleAddExperiments = (newExperiments) => {
+    // TODO: add to database
+    const filter = { _id: study._id };
+    const update = { $addToSet: { experiments: { $each: newExperiments } } };
+    StudyService.updateStudy(filter, update).then(res => res.data).then(res => {
+      if (res.status === "OK") {
+        setExperiments(old => [...old, ...newExperiments]);
+      }
+    })
+  }
+
   const handleRemoveMember = (e) => {
     // talk to server
     // update local array
@@ -111,12 +126,28 @@ function Study() {
       StudyService.updateStudy(filter, update).then(res => res.data).then(res => {
         if (res.status === "OK") {
           setMembers(old => {
-            return old.filter(member => member._id != memberId);
+            return old.filter(member => member._id !== memberId);
           });
         }
       })
     }
+  }
 
+  const handleRemoveExperiment = (e) => {
+    // talk to server
+    // update local array
+    if (e.target.tagName === "path") { // svg button
+      const experimentId = e.target.closest("button").attributes.experimentid.value;
+      const filter = { _id: study._id };
+      const update = { $pull: { experiments: { _id: experimentId } } };
+      StudyService.updateStudy(filter, update).then(res => res.data).then(res => {
+        if (res.status === "OK") {
+          setExperiments(old => {
+            return old.filter(experiment => experiment._id !== experimentId);
+          });
+        }
+      })
+    }
   }
 
   return loading ? (
@@ -162,16 +193,24 @@ function Study() {
           <Tab label="Experiments" {...a11yProps(1)} />
         </Tabs>
         <TabPanel value={indexValue} index={0}>
-          <div className={classes.membertab}>
-            <div className={classes.memberbutton}>
+          <div className={classes.tab}>
+            <div className={classes.button}>
               <NewMemberButton onAddMembers={handleAddMembers} />
             </div>
-            <div className={classes.membertable} onClick={handleRemoveMember}>
+            <div className={classes.table} onClick={handleRemoveMember}>
               <MemberTable members={members} />
             </div>
           </div>
         </TabPanel>
         <TabPanel value={indexValue} index={1}>
+          <div className={classes.tab}>
+            <div className={classes.button}>
+              <NewExperimentButton onAddExperiments={handleAddExperiments} />
+            </div>
+            <div className={classes.table} onClick={handleRemoveExperiment}>
+              <ExperimentTable experiments={experiments} />
+            </div>
+          </div>
           In addition, admin can add/ remove experiments from the study.
           So there should be two tabs.
           Note: this won't affect the existence of the experiments themselves.
