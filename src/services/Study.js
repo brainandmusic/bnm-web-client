@@ -35,6 +35,17 @@ class StudyService {
     };
     return axios(reqOptions);
   }
+
+  static updateStudy(filter, update) {
+    const url = `${BACKEND_API_BASE_URL}/study/update`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      data: qs.stringify({ filter, update }),
+      url,
+    };
+    return axios(reqOptions);
+  }
 }
 
 export default StudyService;

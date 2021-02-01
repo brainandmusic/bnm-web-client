@@ -76,12 +76,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function NewMemberButton({ onCreateCallback }) {
+function NewMemberButton({ onAddMembers }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [rows, setRows] = useState([]);
   const [keyword, setKeyword] = useState("");
+  const [memberIds, setMemeberIds] = useState([]);
 
   useEffect(() => {
     UserService.getUsers({ roles: "admin" }, { firstName: 1, lastName: 1, email: 1 }).then(res => res.data).then(res => {
@@ -116,6 +117,20 @@ function NewMemberButton({ onCreateCallback }) {
 
   const handleKeywordChange = (e) => {
     setKeyword(e.target.value);
+  }
+
+  const handleSelectMemberChange = (param) => {
+    setMemeberIds(param.rowIds);
+  }
+
+  const handleAddMembers = () => {
+    const newMembers = users.filter(user => memberIds.includes(user._id));
+    newMembers.map(member => {
+      delete member.id; // only keep _id field
+      return member;
+    })
+    onAddMembers(newMembers);
+    handleClose();
   }
 
   return (
@@ -161,14 +176,14 @@ function NewMemberButton({ onCreateCallback }) {
                     autoFocus
                   />
                   <div className={classes.usertable}>
-                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={(param) => { alert(JSON.stringify(param)) }} />
+                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectMemberChange} />
                   </div>
                 </form>
               </Grid>
             </CardContent>
             <CardActions>
               <Button size="small" color="secondary" onClick={handleClose} className={classes.cancel}>Cancel</Button>
-              <Button size="small" color="primary">Add</Button>
+              <Button size="small" color="primary" onClick={handleAddMembers}>Add</Button>
             </CardActions>
           </Card>
         </Fade>

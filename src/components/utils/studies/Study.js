@@ -72,12 +72,14 @@ function Study() {
   const [indexValue, setIndexValue] = useState(0);
   const [loading, setLoading] = useState(true);
   const [study, setStudy] = useState({});
+  const [members, setMembers] = useState([]);
 
   useEffect(() => {
     setLoading(true);
     StudyService.getStudies({ _id: studyId }, {}).then(res => res.data).then(res => {
       if (res.status === "OK") {
         setStudy(res.result[0]);
+        setMembers(res.result[0].members);
         setLoading(false);
       }
     })
@@ -87,6 +89,35 @@ function Study() {
   const handleChange = (event, newValue) => {
     setIndexValue(newValue);
   };
+
+  const handleAddMembers = (newMembers) => {
+    const filter = { _id: study._id };
+    const update = { $addToSet: { members: { $each: newMembers } } };
+    StudyService.updateStudy(filter, update).then(res => res.data).then(res => {
+      if (res.status === "OK") {
+        setMembers(old => [...old, ...newMembers]);
+      }
+    })
+  }
+
+  const handleRemoveMember = (e) => {
+    // talk to server
+    // update local array
+    // alert(JSON.stringify(e.target));
+    if (e.target.tagName === "path") { // svg button
+      const memberId = e.target.closest("button").attributes.memberid.value;
+      const filter = { _id: study._id };
+      const update = { $pull: { members: { _id: memberId } } };
+      StudyService.updateStudy(filter, update).then(res => res.data).then(res => {
+        if (res.status === "OK") {
+          setMembers(old => {
+            return old.filter(member => member._id != memberId);
+          });
+        }
+      })
+    }
+
+  }
 
   return loading ? (
     <div>Loading ...</div>
@@ -133,10 +164,10 @@ function Study() {
         <TabPanel value={indexValue} index={0}>
           <div className={classes.membertab}>
             <div className={classes.memberbutton}>
-              <NewMemberButton />
+              <NewMemberButton onAddMembers={handleAddMembers} />
             </div>
-            <div className={classes.membertable}>
-              <MemberTable />
+            <div className={classes.membertable} onClick={handleRemoveMember}>
+              <MemberTable members={members} />
             </div>
           </div>
         </TabPanel>
