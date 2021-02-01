@@ -75,6 +75,17 @@ class UserService {
     };
     return axios(options);
   }
+
+  static getUsers(filter, projection) {
+    const url = `${BACKEND_API_BASE_URL}/user/get`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      data: qs.stringify({ filter, projection }),
+      url,
+    };
+    return axios(options);
+  }
 }
 
 export default UserService;
