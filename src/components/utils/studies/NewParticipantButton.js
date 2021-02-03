@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { DataGrid } from '@material-ui/data-grid';
 import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
 import Backdrop from '@material-ui/core/Backdrop';
@@ -7,17 +6,20 @@ import Button from '@material-ui/core/Button';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
+import { DataGrid } from '@material-ui/data-grid';
 import Divider from '@material-ui/core/Divider';
 import Fade from '@material-ui/core/Fade';
 import Grid from '@material-ui/core/Grid';
 import Modal from '@material-ui/core/Modal';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import ExperimentService from '../../../services/Experiment';
+import UserService from '../../../services/User';
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 230 },
-  { field: 'name', headerName: 'Experiment name', width: 200 },
+  { field: 'id', headerName: 'ID' },
+  { field: 'firstName', headerName: 'First name', width: 130 },
+  { field: 'lastName', headerName: 'Last name', width: 130 },
+  { field: 'email', headerName: 'Email', width: 160 },
 ];
 
 const useStyles = makeStyles((theme) => ({
@@ -74,33 +76,35 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function NewExperimentButton({ onAddExperiments }) {
+function NewParticipantButton({ onAddMembers }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
-  const [experiments, setExperiments] = useState([]);
+  const [users, setUsers] = useState([]);
   const [rows, setRows] = useState([]);
   const [keyword, setKeyword] = useState("");
-  const [expIds, setExpIds] = useState([]);
+  const [memberIds, setMemeberIds] = useState([]);
 
   useEffect(() => {
-    ExperimentService.getExperimentCards({}, { _id: 1, name: 1 }).then(res => res.data).then(res => {
+    UserService.getUsers({ roles: { $nin: ["admin"] } }, { firstName: 1, lastName: 1, email: 1 }).then(res => res.data).then(res => {
       if (res.status === "OK") {
         res.result = res.result.map(u => {
           u.id = u._id; // data grid requires id field
           return u;
         });
-        setExperiments(res.result);
-        setRows(res.result);
+        setUsers(res.result);
+        setRows(res.result); // default display all admins
       }
     })
-  }, []);
+  }, [])
 
   useEffect(() => {
     var re = new RegExp(keyword, "i");
-    setRows(experiments.filter(experiments => experiments._id.match(re) ||
-      experiments.name.match(re)
+    setRows(users.filter(user => user._id.match(re) ||
+      user.firstName.match(re) ||
+      user.lastName.match(re) ||
+      user.email.match(re)
     ))
-  }, [keyword, experiments]);
+  }, [keyword, users]);
 
   const handleOpen = () => {
     setOpen(true);
@@ -115,13 +119,17 @@ function NewExperimentButton({ onAddExperiments }) {
     setKeyword(e.target.value);
   }
 
-  const handleSelectExpChange = (param) => {
-    setExpIds(param.rowIds);
+  const handleSelectMemberChange = (param) => {
+    setMemeberIds(param.rowIds);
   }
 
-  const handleAddExperiments = () => {
-    const newExps = experiments.filter(experiment => expIds.includes(experiment._id));
-    onAddExperiments(newExps);
+  const handleAddMembers = () => {
+    const newMembers = users.filter(user => memberIds.includes(user._id));
+    newMembers.map(member => {
+      delete member.id; // only keep _id field
+      return member;
+    })
+    onAddMembers(newMembers);
     handleClose();
   }
 
@@ -135,7 +143,7 @@ function NewExperimentButton({ onAddExperiments }) {
         className={classes.button}
         onClick={handleOpen}
       >
-        Experiment
+        Assign Participant
     </Button>
       <Modal
         aria-labelledby="transition-modal-title"
@@ -153,7 +161,7 @@ function NewExperimentButton({ onAddExperiments }) {
           <Card className={classes.paper} variant="outlined">
             <CardContent>
               <Typography variant="h5" component="h2" className={classes.title}>
-                Add Experiment
+                Add Participant
               </Typography>
               <Divider />
               <Grid container spacing={1} className={classes.platforms}>
@@ -162,20 +170,20 @@ function NewExperimentButton({ onAddExperiments }) {
                     id="outlined-secondary"
                     variant="outlined"
                     color="primary"
-                    placeholder="Search for experiment ID, name ..."
+                    placeholder="Search for user ID, name, email ..."
                     value={keyword}
                     onChange={handleKeywordChange}
                     autoFocus
                   />
                   <div className={classes.usertable}>
-                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectExpChange} />
+                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectMemberChange} />
                   </div>
                 </form>
               </Grid>
             </CardContent>
             <CardActions>
               <Button size="small" color="secondary" onClick={handleClose} className={classes.cancel}>Cancel</Button>
-              <Button size="small" color="primary" onClick={handleAddExperiments}>Add</Button>
+              <Button size="small" color="primary" onClick={handleAddMembers}>Add</Button>
             </CardActions>
           </Card>
         </Fade>
@@ -184,4 +192,4 @@ function NewExperimentButton({ onAddExperiments }) {
   );
 }
 
-export default NewExperimentButton;
+export default NewParticipantButton;

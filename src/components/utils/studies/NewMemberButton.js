@@ -125,10 +125,6 @@ function NewMemberButton({ onAddMembers }) {
 
   const handleAddMembers = () => {
     const newMembers = users.filter(user => memberIds.includes(user._id));
-    newMembers.map(member => {
-      delete member.id; // only keep _id field
-      return member;
-    })
     onAddMembers(newMembers);
     handleClose();
   }

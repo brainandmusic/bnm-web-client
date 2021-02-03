@@ -2,7 +2,6 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import DeleteIcon from '@material-ui/icons/Delete';
 import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -18,7 +17,7 @@ const useStyles = makeStyles({
   },
 });
 
-function ExperimentTable({ studyId, experiments }) {
+function ParticipantTable({ participants }) {
   const classes = useStyles();
 
   return (
@@ -26,26 +25,28 @@ function ExperimentTable({ studyId, experiments }) {
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            <TableCell>Experiment ID</TableCell>
-            <TableCell>Experiment Name</TableCell>
+            <TableCell>Participant ID</TableCell>
+            <TableCell>First Name</TableCell>
+            <TableCell>Last Name</TableCell>
+            <TableCell>Email</TableCell>
+            <TableCell>Assign Date</TableCell>
+            <TableCell>Complete Date</TableCell>
             <TableCell align="right">Operation</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {experiments.map((experiment) => (
-            <TableRow key={experiment._id}>
+          {participants.map((participant) => (
+            <TableRow key={participant._id}>
               <TableCell component="th" scope="row">
-                <Link href={`/studies/study/${studyId}/experiment/${experiment._id}`}>
-                  {experiment._id}
-                </Link>
+                {participant._id}
               </TableCell>
-              <TableCell>
-                <Link href={`/studies/study/${studyId}/experiment/${experiment._id}`}>
-                  {experiment.name}
-                </Link>
-              </TableCell>
+              <TableCell>{participant.firstName}</TableCell>
+              <TableCell>{participant.lastName}</TableCell>
+              <TableCell>{participant.email}</TableCell>
+              <TableCell>{participant.assignDate}</TableCell>
+              <TableCell>{participant.completeDate}</TableCell>
               <TableCell align="right">
-                <IconButton color="secondary" aria-label="remove experiment" experimentid={experiment._id}>
+                <IconButton color="secondary" aria-label="remove assigment" participantid={participant._id}>
                   <DeleteIcon />
                 </IconButton>
               </TableCell>
@@ -57,4 +58,4 @@ function ExperimentTable({ studyId, experiments }) {
   );
 }
 
-export default ExperimentTable;
+export default ParticipantTable;

@@ -208,12 +208,9 @@ function Study() {
               <NewExperimentButton onAddExperiments={handleAddExperiments} />
             </div>
             <div className={classes.table} onClick={handleRemoveExperiment}>
-              <ExperimentTable experiments={experiments} />
+              <ExperimentTable studyId={study._id} experiments={experiments} />
             </div>
           </div>
-          In addition, admin can add/ remove experiments from the study.
-          So there should be two tabs.
-          Note: this won't affect the existence of the experiments themselves.
         </TabPanel>
         <div>
         </div>

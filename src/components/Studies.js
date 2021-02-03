@@ -1,6 +1,6 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import ExperimentManager from './utils/experiments/ExperimentManager';
+import ParticipantManager from './utils/studies/ParticipantManager';
 import Layout from './utils/layout/Layout';
 import Study from './utils/studies/Study';
 import StudySearch from './utils/studies/StudySearch';
@@ -14,7 +14,7 @@ function Studies() {
           <StudySearch />
         </Route>
         <Route path={`${path}/study/:studyId/experiment/:experimentId`}>
-          <ExperimentManager />
+          <ParticipantManager />
         </Route>
         <Route path={`${path}/study/:studyId`}>
           <Study />
