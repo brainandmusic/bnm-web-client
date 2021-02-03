@@ -86,6 +86,17 @@ class UserService {
     };
     return axios(options);
   }
+
+  static updateUsers(filter = {}, update = {}, options = {}) {
+    const url = `${BACKEND_API_BASE_URL}/user/update`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      data: qs.stringify({ filter, update, options }),
+      url,
+    };
+    return axios(reqOptions);
+  }
 }
 
 export default UserService;

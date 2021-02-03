@@ -76,17 +76,30 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function NewParticipantButton({ onAddMembers }) {
+function NewParticipantButton({ studyId, experimentId, onAddMembers }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
+  const [assignerId, setAssignerId] = useState("");
   const [users, setUsers] = useState([]);
   const [rows, setRows] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [memberIds, setMemeberIds] = useState([]);
 
   useEffect(() => {
-    UserService.getUsers({ roles: { $nin: ["admin"] } }, { firstName: 1, lastName: 1, email: 1 }).then(res => res.data).then(res => {
+    UserService.getProfile().then(res => res.data).then(res => {
       if (res.status === "OK") {
+        setAssignerId(res.result._id);
+      }
+
+    }).catch((e) => {
+      // TODO: show snackbar about the error
+    })
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    UserService.getUsers({ roles: { $nin: ["admin"] } }, { firstName: 1, lastName: 1, email: 1 }).then(res => res.data).then(res => {
+      if (res.status === "OK" && mounted) {
         res.result = res.result.map(u => {
           u.id = u._id; // data grid requires id field
           return u;
@@ -94,7 +107,8 @@ function NewParticipantButton({ onAddMembers }) {
         setUsers(res.result);
         setRows(res.result); // default display all admins
       }
-    })
+    });
+    return () => mounted = false;
   }, [])
 
   useEffect(() => {
@@ -124,12 +138,26 @@ function NewParticipantButton({ onAddMembers }) {
   }
 
   const handleAddMembers = () => {
-    const newMembers = users.filter(user => memberIds.includes(user._id));
-    newMembers.map(member => {
-      delete member.id; // only keep _id field
-      return member;
+    UserService.updateUsers(
+      { _id: { $in: memberIds } },
+      {
+        $push: {
+          experiments: {
+            studyId,
+            experimentId,
+            assignDate: Date.now(),
+            assignerId,
+            status: "pending",
+          }
+        }
+      },
+    ).then(res => res.data).then(res => {
+      alert(JSON.stringify(res));
+    }).catch(e => {
+      // TODO: show snackbar
+      console.log(e);
     })
-    onAddMembers(newMembers);
+    // onAddMembers(newMembers);
     handleClose();
   }
 
