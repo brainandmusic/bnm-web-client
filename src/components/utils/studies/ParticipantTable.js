@@ -36,7 +36,7 @@ function ParticipantTable({ participants }) {
         </TableHead>
         <TableBody>
           {participants.map((participant) => (
-            <TableRow key={participant._id}>
+            <TableRow key={`${participant._id}_${participant.assignDate}`}>
               <TableCell component="th" scope="row">
                 {participant._id}
               </TableCell>

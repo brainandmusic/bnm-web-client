@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function NewParticipantButton({ studyId, experimentId, onAddMembers }) {
+function NewParticipantButton({ studyId, experimentId, onAddParticipants }) {
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const [assignerId, setAssignerId] = useState("");
@@ -138,6 +138,7 @@ function NewParticipantButton({ studyId, experimentId, onAddMembers }) {
   }
 
   const handleAddMembers = () => {
+    const timestamp = Date.now();
     UserService.updateUsers(
       { _id: { $in: memberIds } },
       {
@@ -145,19 +146,31 @@ function NewParticipantButton({ studyId, experimentId, onAddMembers }) {
           experiments: {
             studyId,
             experimentId,
-            assignDate: Date.now(),
+            assignDate: timestamp,
             assignerId,
             status: "pending",
           }
         }
       },
     ).then(res => res.data).then(res => {
-      alert(JSON.stringify(res));
+      if (res.status === "OK") {
+        let newParticipants = users.filter(user => memberIds.includes(user._id));
+        newParticipants = newParticipants.map(p => {
+          return {
+            ...p,
+            studyId,
+            experimentId,
+            assignDate: new Date(timestamp).toISOString(),
+            assignerId,
+            status: "pending",
+          }
+        })
+        onAddParticipants(newParticipants);
+      }
     }).catch(e => {
       // TODO: show snackbar
       console.log(e);
     })
-    // onAddMembers(newMembers);
     handleClose();
   }
 

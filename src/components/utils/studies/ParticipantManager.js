@@ -29,23 +29,23 @@ function ParticipantManager() {
     setLoading(true);
     UserService.getUsers(
       { experiments: { $elemMatch: { studyId, experimentId } } },
-      { _id: 1, firstName: 1, lastName: 1, email: 1, "experiments.$": 1 }
+      // { _id: 1, firstName: 1, lastName: 1, email: 1, "experiments.$": 1 }
+      {}
     ).then(res => res.data).then(res => {
       setLoading(false);
       if (res.status === "OK") {
         let participantsFromDb = [];
         res.result.forEach(participant => {
-          participant.experiments.forEach(exp => {
+          participant.experiments.filter(exp => exp.studyId === studyId && exp.experimentId === experimentId).forEach(exp => {
             participantsFromDb.push({
-              id: participant._id,
+              ...exp,
+              _id: participant._id, // TODO: check why there is an _id in experiment obj
               firstName: participant.firstName,
               lastName: participant.lastName,
               email: participant.email,
-              ...exp
             })
           })
         })
-        // alert(JSON.stringify(res.result));
         setParticipants(participantsFromDb);
       }
     }).catch(e => {
@@ -54,12 +54,16 @@ function ParticipantManager() {
     });
   }, [studyId, experimentId]);
 
+  const handleAddParticipants = (newParticipants) => {
+    setParticipants(old => [...old, ...newParticipants]);
+  }
+
   return loading ? (
     <div>Loading ...</div>
   ) : (
       <div className={classes.root}>
         <div className={classes.toolbar}>
-          <NewParticipantButton studyId={studyId} experimentId={experimentId} />
+          <NewParticipantButton studyId={studyId} experimentId={experimentId} onAddParticipants={handleAddParticipants} />
         </div>
         <div className={classes.table}>
           <ParticipantTable participants={participants} />
