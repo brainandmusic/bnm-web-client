@@ -13,7 +13,7 @@ import NotFound from './components/NotFound';
 import Notifications from './components/Notifications';
 import PrivateRoute from './routes/PrivateRoute';
 import Settings from './components/Settings';
-import SignInSide from './components/SignInSide';
+import SignInSide from './pages/SignInSide';
 import SignUpSide from './components/SignUpSide';
 import Studies from './components/Studies';
 
