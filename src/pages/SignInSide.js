@@ -87,27 +87,27 @@ function SignInSide() {
     setPassword(e.target.value);
   }
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setSigningIn(true)
-    UserService.signin(email, password).then(res => {
-      setSigningIn(false);
-      return res.data;
-    }).then(res => {
-      if (res.status !== "OK") {
-        setSnackbarMessage(res.message);
-        handleOpenSnackbar();
-        return;
-      }
-      localStorage.setItem("token", res.result.token);
-      user.setIsLoggedIn(true);
-      user.setIsAdmin(res.result.roles.includes("admin"));
-      // go to the page before login, if exists
-      history.replace(from);
-    }).catch(e => {
-      setSnackbarMessage(e);
+
+    setSigningIn(true);
+    const res = await UserService.signin(email, password);
+    setSigningIn(false);
+
+    // display error message
+    if (res.status !== "OK") {
+      setSnackbarMessage(res.message);
       handleOpenSnackbar();
-    });
+      return;
+    }
+
+    // store login information to local storage
+    localStorage.setItem("auth_token", res.result.auth_token);
+    localStorage.setItem("uid", res.result.uid);
+    user.setIsLoggedIn(true);
+
+    // go to the page before login, if exists
+    history.replace(from);
   }
 
   const handleOpenSnackbar = () => setOpenSnackbar(true);
