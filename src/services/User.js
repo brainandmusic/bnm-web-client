@@ -3,6 +3,19 @@ import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class UserService {
+  static async signin(email, password) {
+    const url = `${BACKEND_API_BASE_URL}/users/login`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      data: { email, password },
+      url,
+    };
+
+    let res = await axios(options);
+    return res.data;
+  }
+
   static getProfile() {
     const url = `${BACKEND_API_BASE_URL}/user/profile`;
     const options = {
@@ -17,17 +30,6 @@ class UserService {
     const options = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      url,
-    };
-    return axios(options);
-  }
-
-  static signin(email, password) {
-    const url = `${BACKEND_API_BASE_URL}/user/login`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email, password }),
       url,
     };
     return axios(options);
