@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
-import DelExpModal from './DelExpModal';
-import ExperimentCard from './ExperimentCard';
-import ExperimentService from '../../../services/Experiment';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-import NewButton from './NewButton';
 import Select from '@material-ui/core/Select';
-import UserService from '../../../services/User';
+import DelExpModal from './DelExpModal';
+import ExperimentCard from './ExperimentCard';
+import ExperimentService from '../../services/Experiment';
+import NewButton from './NewButton';
+import UserService from '../../services/User';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -46,9 +46,11 @@ const useStyles = makeStyles((theme) => ({
 function ExperimentSearch() {
   const classes = useStyles();
   const history = useHistory();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [role, setRole] = useState("participant");
   const [experiments, setExperiments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+
   const [delExpId, setDelExpId] = useState("");
   const [delExpOpen, setDelExpOpen] = useState(false);
 
@@ -69,8 +71,7 @@ function ExperimentSearch() {
   }
 
   const loadAdminExperiments = async () => {
-    let res = await ExperimentService.getExperimentCards();
-    res = res.data;
+    let res = await ExperimentService.getExperiments();
     if (res.status === "OK") {
       setExperiments(res.result);
     }
@@ -83,17 +84,25 @@ function ExperimentSearch() {
   }
 
   useEffect(() => {
-    UserService.isAdmin().then(res => res.data).then(res => {
-      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
-        localStorage.removeItem("token");
-        history.push("/");
+    async function getRole() {
+      let res = await UserService.getRole(localStorage.getItem("uid"));
+      if (res.status !== "OK") {
+        // clean up local storage
+        localStorage.removeItem("auth_token");
+        localStorage.removeItem("uid");
+        history.go(0);
       }
-      else if (res.status === "OK") {
-        setIsAdmin(res.result.isAdmin);
-        res.result.isAdmin && loadAdminExperiments();
-        !res.result.isAdmin && loadParticipantExperiments();
-      }
-    })
+      setRole(res.result.role);
+      return res.result.role;
+    }
+
+    async function getExperimentList() {
+      const roleFromDb = await getRole();
+      roleFromDb === "admin" && loadAdminExperiments();
+      roleFromDb === "participant" && loadParticipantExperiments();
+    }
+
+    getExperimentList();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleCardClick = (e) => {
@@ -108,21 +117,25 @@ function ExperimentSearch() {
   ) : (
       <Grid container direction="column" className={classes.root}>
         <Grid item container className={classes.toolbox}>
-          <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-            <FormControl className={classes.formcontrol}>
-              <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
-              <Select
-                labelId="user-experiment-status-select-label"
-                id="user-experiment-status-select"
-                value="Pending"
-              >
-                <MenuItem value="Pending">Pending</MenuItem>
-                <MenuItem value="Complete">Complete</MenuItem>
-              </Select>
-            </FormControl>
-          </Grid>
           {
-            isAdmin ? (
+            role === "participant" ? (
+              <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+                <FormControl className={classes.formcontrol}>
+                  <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
+                  <Select
+                    labelId="user-experiment-status-select-label"
+                    id="user-experiment-status-select"
+                    value="Pending"
+                  >
+                    <MenuItem value="Pending">Pending</MenuItem>
+                    <MenuItem value="Complete">Complete</MenuItem>
+                  </Select>
+                </FormControl>
+              </Grid>
+            ) : null
+          }
+          {
+            role !== "participant" ? (
               <Grid item xs={12} md={2} lg={1} className={classes.filter}>
                 <FormControl className={classes.formcontrol}>
                   <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
@@ -139,7 +152,7 @@ function ExperimentSearch() {
             ) : null
           }
           {
-            isAdmin ? (
+            role !== "participant" ? (
               <Grid item xs={12} md="auto" className={classes.filter}>
                 <NewButton />
               </Grid>
@@ -150,7 +163,7 @@ function ExperimentSearch() {
           {
             experiments.map((experiment, index) => (
               <Grid item xs={12} md={6} lg={2} key={`experiment_card_id_${index}`} className={classes.experiment}>
-                <ExperimentCard {...experiment} />
+                <ExperimentCard role={role} {...experiment} />
               </Grid>
             ))
           }

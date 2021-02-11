@@ -16,6 +16,51 @@ class UserService {
     return res.data;
   }
 
+  static async getRole(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/role`;
+    const options = {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
+      url,
+    };
+
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async getUser(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}`;
+    const options = {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
+      url,
+    };
+
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static signout() {
+    const url = `${BACKEND_API_BASE_URL}/users/logout`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      url,
+    };
+    let res = axios(options);
+    return res.data;
+  }
+
+
+
+  // legacy APIs
+
   static getProfile() {
     const url = `${BACKEND_API_BASE_URL}/user/profile`;
     const options = {
@@ -46,15 +91,7 @@ class UserService {
     return axios(options);
   }
 
-  static signout() {
-    const url = `${BACKEND_API_BASE_URL}/user/logout`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      url,
-    };
-    return axios(options);
-  }
+
 
   static sendVerificationEmail(email) {
     const url = `${BACKEND_API_BASE_URL}/user/sendVerifyEmail`;

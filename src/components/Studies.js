@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import ExperimentManager from './utils/experiments/ExperimentManager';
-import Layout from './utils/layout/Layout';
+import ExperimentManager from './experiments/ExperimentManager';
+import Layout from './layout/Layout';
 import Study from './utils/studies/Study';
 import StudySearch from './utils/studies/StudySearch';
 

@@ -12,9 +12,9 @@ import Modal from '@material-ui/core/Modal';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Divider } from '@material-ui/core';
-import psychopyLogo from '../../../images/psychopy-logo.png';
-import jspsychLogo from '../../../images/jspsych-logo.png';
-import labjsLogo from '../../../images/labjs-logo.png';
+import psychopyLogo from '../../images/psychopy-logo.png';
+import jspsychLogo from '../../images/jspsych-logo.png';
+import labjsLogo from '../../images/labjs-logo.png';
 
 const useStyles = makeStyles((theme) => ({
   button: {

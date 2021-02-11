@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import MenuAppBar from './MenuAppBar';
+import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar';
 import SideBar from './SideBar';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,11 +44,16 @@ const useStyles = makeStyles((theme) => ({
 
 function Layout({ children, title }) {
   const classes = useStyles();
-  const [open, setOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(true);
 
-  const handleMobileMenuOpen = () => setOpen(true);
+  const handleMobileMenuOpen = () => setMenuOpen(true);
 
-  const handleMobileMenuClose = () => setOpen(false);
+  const handleMobileMenuClose = () => setMenuOpen(false);
+
+  const handleSnackbarOpen = () => setSnackbarOpen(true);
+
+  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   return (
     <div className={classes.root}>
@@ -51,7 +62,7 @@ function Layout({ children, title }) {
         handleMenuClick={handleMobileMenuOpen}
         menu={
           <SideBar
-            open={open}
+            open={menuOpen}
             handleClose={handleMobileMenuClose}
           />
         }
@@ -66,6 +77,11 @@ function Layout({ children, title }) {
           {children}
         </div>
       </main>
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity="info">
+          This is a success message!
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

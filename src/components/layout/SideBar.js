@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRouteMatch, useHistory } from "react-router-dom";
-import { useUser } from '../../../contexts/AuthContext';
+import { useUser } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -18,7 +18,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import SettingsIcon from '@material-ui/icons/Settings';
-import UserService from '../../../services/User';
+import UserService from '../../services/User';
 
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;

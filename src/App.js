@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { AuthContextProvider } from './contexts/AuthContext';
 import Account from './components/Account';
-import Experiments from './components/Experiments';
+import Experiments from './pages/Experiments';
 import Messages from './components/Messages';
 import NotFound from './components/NotFound';
 import Notifications from './components/Notifications';
@@ -16,6 +16,7 @@ import Settings from './components/Settings';
 import SignInSide from './pages/SignInSide';
 import SignUpSide from './components/SignUpSide';
 import Studies from './components/Studies';
+import Groups from './pages/Groups';
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path='/login' children={<SignInSide />} />
           <Route path='/signup' children={<SignUpSide />} />
           <PrivateRoute path='/experiments' children={<Experiments />} />
+          <PrivateRoute path='/groups' children={<Groups />} />
           <PrivateRoute path='/settings' children={<Settings />} />
           <PrivateRoute path='/studies' children={<Studies />} />
           <PrivateRoute path='/notifications' children={<Notifications />} />

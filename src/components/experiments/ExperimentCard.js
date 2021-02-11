@@ -12,7 +12,7 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
-import UserService from '../../../services/User';
+import UserService from '../../services/User';
 
 const useStyles = makeStyles({
   root: {
@@ -29,7 +29,7 @@ const useStyles = makeStyles({
   }
 });
 
-function ExperimentCard({ name, description, platform, _id }) {
+function ExperimentCard({ role, name, description, platform, _id }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);

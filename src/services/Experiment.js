@@ -3,6 +3,19 @@ import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class ExperimentService {
+  static async getExperiments() {
+    const url = `${BACKEND_API_BASE_URL}/experiments`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+
+
   static getExperimentCards(filter = {}, projection = {}, options = {}) {
     const url = `${BACKEND_API_BASE_URL}/experiment/card/get`;
     const reqOptions = {
