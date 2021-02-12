@@ -71,6 +71,7 @@ function ExperimentSearch() {
   }
 
   const loadAdminExperiments = async () => {
+    // get all experiments
     let res = await ExperimentService.getExperiments();
     if (res.status === "OK") {
       setExperiments(res.result);
@@ -135,21 +136,21 @@ function ExperimentSearch() {
             ) : null
           }
           {
-            role !== "participant" ? (
-              <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-                <FormControl className={classes.formcontrol}>
-                  <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
-                  <Select
-                    labelId="user-experiment-platform-select-label"
-                    id="user-experiment-platform-select"
-                  >
-                    <MenuItem value="jspsych">jsPsych</MenuItem>
-                    <MenuItem value="labjs">Lab.js</MenuItem>
-                    <MenuItem value="psychopy">PsychoPy</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            ) : null
+            // role !== "participant" ? (
+            //   <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+            //     <FormControl className={classes.formcontrol}>
+            //       <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
+            //       <Select
+            //         labelId="user-experiment-platform-select-label"
+            //         id="user-experiment-platform-select"
+            //       >
+            //         <MenuItem value="jspsych">jsPsych</MenuItem>
+            //         <MenuItem value="labjs">Lab.js</MenuItem>
+            //         <MenuItem value="psychopy">PsychoPy</MenuItem>
+            //       </Select>
+            //     </FormControl>
+            //   </Grid>
+            // ) : null
           }
           {
             role !== "participant" ? (
