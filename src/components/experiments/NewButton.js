@@ -55,16 +55,16 @@ const useStyles = makeStyles((theme) => ({
 
 const platforms = [
   {
-    src: psychopyLogo,
-    alt: "PsychoPy Logo",
-    name: "PsychoPy",
-    url: "/experiments/builder/platform/psychopy",
-  },
-  {
     src: labjsLogo,
     alt: "Lab.js Logo",
     name: "Lab.js",
     url: "/experiments/builder/platform/labjs",
+  },
+  {
+    src: psychopyLogo,
+    alt: "PsychoPy Logo",
+    name: "PsychoPy",
+    url: "/experiments/builder/platform/psychopy",
   },
   {
     src: jspsychLogo,
