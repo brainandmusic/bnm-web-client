@@ -9,6 +9,7 @@ import Select from '@material-ui/core/Select';
 import DelExpModal from './DelExpModal';
 import ExperimentCard from './ExperimentCard';
 import ExperimentService from '../../services/Experiment';
+import Layout from '../layout/Layout';
 import NewButton from './NewButton';
 import UserService from '../../services/User';
 
@@ -49,26 +50,40 @@ function ExperimentSearch() {
   const [role, setRole] = useState("participant");
   const [experiments, setExperiments] = useState([]);
   const [loading, setLoading] = useState(true);
-
-
   const [delExpId, setDelExpId] = useState("");
   const [delExpOpen, setDelExpOpen] = useState(false);
+  const [snackOpen, setSnackOpen] = useState(false);
+  const [snackMsg, setSnackMsg] = useState("");
+  const [severity, setSeverity] = useState("info");
 
   const handleDelExpOpen = () => setDelExpOpen(true);
   const handleDelExpClose = () => setDelExpOpen(false);
   const handleDelExpConfirm = async () => {
     handleDelExpClose();
-    let res = await ExperimentService.deleteExperiment(delExpId);
-    res = res.data;
-    // TODO: add snackbar to show the delete result using res
-    if (res.status === "OK") {
-      setExperiments(old => {
-        return old.filter(oldExp =>
-          oldExp._id !== delExpId
-        )
-      });
+    try {
+      let res = await ExperimentService.deleteExperiment(delExpId);
+      if (res.status === "OK") {
+        setExperiments(old => {
+          return old.filter(oldExp =>
+            oldExp._id !== delExpId
+          )
+        });
+        setSeverity("info");
+      }
+      else {
+        setSeverity("warning");
+      }
+      setSnackMsg(res.message);
+    } catch (e) {
+      setSeverity("error");
+      setSnackMsg("Server Error: please try again later.");
+    } finally {
+      setSnackOpen(true);
     }
   }
+
+  const handleSnackOpen = () => setSnackOpen(true);
+  const handleSnackClose = () => setSnackOpen(false);
 
   const loadAdminExperiments = async () => {
     // get all experiments
@@ -116,64 +131,72 @@ function ExperimentSearch() {
   return loading ? (
     <div>Loading ...</div>
   ) : (
-      <Grid container direction="column" className={classes.root}>
-        <Grid item container className={classes.toolbox}>
-          {
-            role === "participant" ? (
-              <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-                <FormControl className={classes.formcontrol}>
-                  <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
-                  <Select
-                    labelId="user-experiment-status-select-label"
-                    id="user-experiment-status-select"
-                    value="Pending"
-                  >
-                    <MenuItem value="Pending">Pending</MenuItem>
-                    <MenuItem value="Complete">Complete</MenuItem>
-                  </Select>
-                </FormControl>
-              </Grid>
-            ) : null
-          }
-          {
-            // role !== "participant" ? (
-            //   <Grid item xs={12} md={2} lg={1} className={classes.filter}>
-            //     <FormControl className={classes.formcontrol}>
-            //       <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
-            //       <Select
-            //         labelId="user-experiment-platform-select-label"
-            //         id="user-experiment-platform-select"
-            //       >
-            //         <MenuItem value="jspsych">jsPsych</MenuItem>
-            //         <MenuItem value="labjs">Lab.js</MenuItem>
-            //         <MenuItem value="psychopy">PsychoPy</MenuItem>
-            //       </Select>
-            //     </FormControl>
-            //   </Grid>
-            // ) : null
-          }
-          {
-            role !== "participant" ? (
-              <Grid item xs={12} md="auto" className={classes.filter}>
-                <NewButton />
-              </Grid>
-            ) : null
-          }
+      <Layout
+        title={"Experiments"}
+        snackbarOpen={snackOpen}
+        handleSnackbarOpen={handleSnackOpen}
+        handleSnackbarClose={handleSnackClose}
+        snackbarMsg={snackMsg}
+        snackbarSeverity={severity} >
+        <Grid container direction="column" className={classes.root}>
+          <Grid item container className={classes.toolbox}>
+            {
+              role === "participant" ? (
+                <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+                  <FormControl className={classes.formcontrol}>
+                    <InputLabel id="user-experiment-status-select-label">Status</InputLabel>
+                    <Select
+                      labelId="user-experiment-status-select-label"
+                      id="user-experiment-status-select"
+                      value="Pending"
+                    >
+                      <MenuItem value="Pending">Pending</MenuItem>
+                      <MenuItem value="Complete">Complete</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Grid>
+              ) : null
+            }
+            {
+              // role !== "participant" ? (
+              //   <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+              //     <FormControl className={classes.formcontrol}>
+              //       <InputLabel id="user-experiment-platform-select-label">Platform</InputLabel>
+              //       <Select
+              //         labelId="user-experiment-platform-select-label"
+              //         id="user-experiment-platform-select"
+              //       >
+              //         <MenuItem value="jspsych">jsPsych</MenuItem>
+              //         <MenuItem value="labjs">Lab.js</MenuItem>
+              //         <MenuItem value="psychopy">PsychoPy</MenuItem>
+              //       </Select>
+              //     </FormControl>
+              //   </Grid>
+              // ) : null
+            }
+            {
+              role !== "participant" ? (
+                <Grid item xs={12} md="auto" className={classes.filter}>
+                  <NewButton />
+                </Grid>
+              ) : null
+            }
+          </Grid>
+          <Grid item container className={classes.experiments} onClick={handleCardClick}>
+            {
+              experiments.map((experiment, index) => (
+                <Grid item xs={12} md={6} lg={2} key={`experiment_card_id_${index}`} className={classes.experiment}>
+                  <ExperimentCard role={role} {...experiment} />
+                </Grid>
+              ))
+            }
+          </Grid>
+          <DelExpModal
+            open={delExpOpen}
+            handleClose={handleDelExpClose}
+            handleDelete={handleDelExpConfirm} />
         </Grid>
-        <Grid item container className={classes.experiments} onClick={handleCardClick}>
-          {
-            experiments.map((experiment, index) => (
-              <Grid item xs={12} md={6} lg={2} key={`experiment_card_id_${index}`} className={classes.experiment}>
-                <ExperimentCard role={role} {...experiment} />
-              </Grid>
-            ))
-          }
-        </Grid>
-        <DelExpModal
-          open={delExpOpen}
-          handleClose={handleDelExpClose}
-          handleDelete={handleDelExpConfirm} />
-      </Grid>
+      </Layout>
     );
 }
 

@@ -9,9 +9,7 @@ function Experiments() {
   return (
     <Switch>
       <Route exact path={path}>
-        <Layout title="Experiments">
-          <ExperimentSearch />
-        </Layout>
+        <ExperimentSearch />
       </Route>
       <Route path={`${path}/builder/platform/:platform/experiment/:experimentId`}>
         <Layout title="Experiments">

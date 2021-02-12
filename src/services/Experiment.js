@@ -7,7 +7,19 @@ class ExperimentService {
     const url = `${BACKEND_API_BASE_URL}/experiments`;
     const reqOptions = {
       method: "GET",
-      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async deleteExperiment(experimentId) {
+    const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
+    const reqOptions = {
+      method: "DELETE",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: qs.stringify({ experimentId }),
       url,
     };
     let res = await axios(reqOptions);
@@ -15,7 +27,7 @@ class ExperimentService {
   }
 
 
-
+  // old
   static getExperimentCards(filter = {}, projection = {}, options = {}) {
     const url = `${BACKEND_API_BASE_URL}/experiment/card/get`;
     const reqOptions = {
@@ -38,16 +50,7 @@ class ExperimentService {
     return axios(reqOptions);
   }
 
-  static deleteExperiment(experimentId) {
-    const url = `${BACKEND_API_BASE_URL}/experiment/delete`;
-    const reqOptions = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      data: qs.stringify({ experimentId }),
-      url,
-    };
-    return axios(reqOptions);
-  }
+
 
   static updateExperiment(updatedExp) {
     const url = `${BACKEND_API_BASE_URL}/experiment/update`;

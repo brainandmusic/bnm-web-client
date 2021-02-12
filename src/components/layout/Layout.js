@@ -42,18 +42,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Layout({ children, title }) {
+function Layout({ children, title, snackbarOpen, handleSnackbarOpen, handleSnackbarClose, snackbarMsg, snackbarSeverity }) {
   const classes = useStyles();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [snackbarOpen, setSnackbarOpen] = useState(true);
 
   const handleMobileMenuOpen = () => setMenuOpen(true);
 
   const handleMobileMenuClose = () => setMenuOpen(false);
-
-  const handleSnackbarOpen = () => setSnackbarOpen(true);
-
-  const handleSnackbarClose = () => setSnackbarOpen(false);
 
   return (
     <div className={classes.root}>
@@ -78,8 +73,8 @@ function Layout({ children, title }) {
         </div>
       </main>
       <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
-        <Alert onClose={handleSnackbarClose} severity="info">
-          This is a success message!
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity}>
+          {snackbarMsg}
         </Alert>
       </Snackbar>
     </div>
