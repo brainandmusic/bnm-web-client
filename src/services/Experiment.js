@@ -14,6 +14,17 @@ class ExperimentService {
     return res.data;
   }
 
+  static async getExperiment(experimentId) {
+    const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
   static async deleteExperiment(experimentId) {
     const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
     const reqOptions = {
@@ -27,6 +38,9 @@ class ExperimentService {
   }
 
 
+
+
+
   // old
   static getExperimentCards(filter = {}, projection = {}, options = {}) {
     const url = `${BACKEND_API_BASE_URL}/experiment/card/get`;
@@ -38,19 +52,6 @@ class ExperimentService {
     };
     return axios(reqOptions);
   }
-
-  static getExperiment(id) {
-    const url = `${BACKEND_API_BASE_URL}/experiment/get`;
-    const reqOptions = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      data: qs.stringify({ experimentId: id }),
-      url,
-    };
-    return axios(reqOptions);
-  }
-
-
 
   static updateExperiment(updatedExp) {
     const url = `${BACKEND_API_BASE_URL}/experiment/update`;
