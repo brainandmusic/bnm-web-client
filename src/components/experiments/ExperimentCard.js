@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
@@ -12,7 +12,6 @@ import MoreVertIcon from "@material-ui/icons/MoreVert";
 import PlayArrowIcon from '@material-ui/icons/PlayArrow';
 import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
-import UserService from '../../services/User';
 
 const useStyles = makeStyles({
   root: {
@@ -33,20 +32,7 @@ function ExperimentCard({ role, name, description, platform, _id }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const [isAdmin, setIsAdmin] = useState(false);
   const menuOpen = Boolean(anchorEl);
-
-  useEffect(() => {
-    UserService.isAdmin().then(res => res.data).then(res => {
-      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
-        localStorage.removeItem("token");
-        history.push("/");
-      }
-      else if (res.status === "OK") {
-        setIsAdmin(res.result.isAdmin);
-      }
-    })
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleMenuClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -71,10 +57,10 @@ function ExperimentCard({ role, name, description, platform, _id }) {
 
   return (
     <Card className={classes.root}>
-      <CardActionArea onClick={isAdmin ? handleConfigClick : handleRunClick}>
+      <CardActionArea onClick={role === "admin" ? handleConfigClick : handleRunClick}>
         <CardContent>
           {
-            isAdmin ? (
+            role === "admin" ? (
               <Typography variant="subtitle2" color="textSecondary">
                 {platform}
               </Typography>
@@ -90,14 +76,14 @@ function ExperimentCard({ role, name, description, platform, _id }) {
       </CardActionArea>
       <CardActions disableSpacing>
         {
-          isAdmin ? null : (
+          role === "admin" ? null : (
             <IconButton aria-label="start experiment" onClick={handleRunClick}>
               <PlayArrowIcon />
             </IconButton>
           )
         }
         {
-          isAdmin ? (
+          role === "admin" ? (
             <>
               <IconButton aria-label="config experiment" onClick={handleConfigClick}>
                 <TuneIcon />
