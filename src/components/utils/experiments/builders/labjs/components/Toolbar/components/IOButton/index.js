@@ -39,7 +39,7 @@ const IOButton = () => {
             history.push(`/experiments/builder/platform/${platform}/experiment/${res.result._id}`)
           }
           else {
-            alert('Experiment has been saved successfully.');
+            alert('Experiment has been updated successfully.');
           }
         }
         else {

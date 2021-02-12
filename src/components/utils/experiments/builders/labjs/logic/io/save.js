@@ -89,22 +89,11 @@ export const saveToDatabase = async (state, experimentId, { exportedComponent = 
   const stateJSON = stateToJSON(state, exportedComponent, { removeInternals })
   if (experimentId) {
     // existing experiment
-
-
-
-    const updatedExp = {};
-    updatedExp.experimentId = experimentId;
-    if (!experimentId) {
-      alert(experimentId);
-    }
-    updatedExp.name = state.components.root.metadata.title;
-    updatedExp.description =
-      updatedExp.data = stateJSON;
-    updatedExp.platform = "lab.js";
-    !experimentId && (updatedExp.createDate = Date.now());
-
-    const res = await ExperimentService.updateExperiment(updatedExp);
-    return res.data.result;
+    const updatedFields = {}
+    updatedFields.name = state.components.root.metadata.title;
+    updatedFields.description = state.components.root.metadata.description;
+    updatedFields.data = stateJSON;
+    return await ExperimentService.updateExperiment(experimentId, updatedFields);
   }
   else {
     // new experiment

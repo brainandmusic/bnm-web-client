@@ -48,6 +48,19 @@ class ExperimentService {
     return res.data;
   }
 
+  static async updateExperiment(experimentId, updatedFields) {
+    const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
+    const reqOptions = {
+      method: "PUT",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { updatedFields },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+
 
 
   // old
@@ -57,17 +70,6 @@ class ExperimentService {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
       data: qs.stringify({ filter, projection, options }),
-      url,
-    };
-    return axios(reqOptions);
-  }
-
-  static updateExperiment(updatedExp) {
-    const url = `${BACKEND_API_BASE_URL}/experiment/update`;
-    const reqOptions = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      data: qs.stringify(updatedExp),
       url,
     };
     return axios(reqOptions);
