@@ -59,21 +59,6 @@ class ExperimentService {
     let res = await axios(reqOptions);
     return res.data;
   }
-
-
-
-
-  // old
-  static getExperimentCards(filter = {}, projection = {}, options = {}) {
-    const url = `${BACKEND_API_BASE_URL}/experiment/card/get`;
-    const reqOptions = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      data: qs.stringify({ filter, projection, options }),
-      url,
-    };
-    return axios(reqOptions);
-  }
 }
 
 export default ExperimentService;
