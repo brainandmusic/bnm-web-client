@@ -18,7 +18,7 @@ class ExperimentService {
     const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
     const reqOptions = {
       method: "GET",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       url,
     };
     let res = await axios(reqOptions);
@@ -29,15 +29,24 @@ class ExperimentService {
     const url = `${BACKEND_API_BASE_URL}/experiments/${experimentId}`;
     const reqOptions = {
       method: "DELETE",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
-      data: qs.stringify({ experimentId }),
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       url,
     };
     let res = await axios(reqOptions);
     return res.data;
   }
 
-
+  static async createExperiment(expInfo) {
+    const url = `${BACKEND_API_BASE_URL}/experiments`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { expInfo },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
 
 
 
