@@ -46,6 +46,21 @@ class UserService {
     return res.data;
   }
 
+  static async getUsers() {
+    const url = `${BACKEND_API_BASE_URL}/users`;
+    const options = {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
+      url,
+    };
+
+    let res = await axios(options);
+    return res.data;
+  }
+
   static signout() {
     const url = `${BACKEND_API_BASE_URL}/users/logout`;
     const options = {

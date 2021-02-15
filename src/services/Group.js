@@ -57,6 +57,18 @@ class GroupService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async addMembersToGroup(groupId, memberIds) {
+    const url = `${BACKEND_API_BASE_URL}/groups/${groupId}/members`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { memberIds },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default GroupService;

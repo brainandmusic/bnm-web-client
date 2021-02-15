@@ -12,7 +12,7 @@ import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
 import DeleteModal from '../modals/DeleteModal';
 import Layout from '../layout/Layout';
-import NewGroupButton from './NewGroupButton';
+import UsersModalButton from '../buttons/UsersModalButton';
 import UserService from '../../services/User';
 import GroupService from '../../services/Group';
 
@@ -106,7 +106,13 @@ function GroupMembers() {
       // delete from local display list
       setMembers(oldMems => {
         return oldMems.filter(oldMem => oldMem._id !== delMemberId);
-      })
+      });
+
+      setGroup(old => {
+        old.members = old.members.filter(m => m._id !== delMemberId);
+        return old;
+      });
+
       setSnackSev("info");
     }
     else {
@@ -116,26 +122,39 @@ function GroupMembers() {
     setSnackOpen(true);
   }
 
-  const handleCreateGroup = async (name) => {
-    // const groupInfo = {
-    //   name,
-    //   creator: localStorage.getItem("uid")
-    // }
-    // // save new group info to database
-    // // TODO: add new member
-    // let res = await GroupService.createGroup(groupInfo);
+  const handleAddMembersToGroup = async (newMembers) => {
+    const memberIds = newMembers.map(mem => mem._id);
 
-    // if (res.status === "OK") {
-    //   // delete from local display list
-    //   setGroups(oldGroups => {
-    //     return [...oldGroups, res.result];
-    //   })
-    //   setSnackSev("info");
-    // }
-    // else {
-    //   setSnackSev("error");
-    // }
-    // setSnackMsg(res.message);
+    let res = await GroupService.addMembersToGroup(groupId,memberIds);
+    if (res.status === "OK") {
+      setMembers(old => {
+        newMembers.forEach(mem => {
+          // deduplicate
+          const idx = old.findIndex(user => user._id === mem._id);
+          if (idx < 0) {
+            old.push(mem);
+          }
+        });
+        return old;
+      });
+
+      setGroup(old => {
+        newMembers.forEach(mem => {
+          // deduplicate
+          const idx = old.members.findIndex(user => user._id === mem._id);
+          if (idx < 0) {
+            old.members.push(mem);
+          }
+        });
+        return old;
+      });
+
+      setSnackSev("info");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
     setSnackOpen(true);
   }
 
@@ -152,7 +171,13 @@ function GroupMembers() {
         ) : (
           <Grid container direction="column" className={classes.root}>
             <Grid item md="auto" className={classes.filter}>
-              <NewGroupButton handleCreate={handleCreateGroup} />
+              <UsersModalButton
+                buttonLabel="New Member"
+                modalTitle="Add Group Member"
+                roles={["participant"]}
+                submitBtnLabel="Add To Group"
+                onSubmit={handleAddMembersToGroup}
+              />
             </Grid>
             <Grid item container direction="column" onClick={handleMemberClick}>
               {
