@@ -36,7 +36,7 @@ function GroupMembers() {
   const [role, setRole] = useState("participant");
   const [group, setGroup] = useState({});
   const [members, setMembers] = useState([]);
-  const [delGroupId, setDelGroupId] = useState("");
+  const [delMemberId, setDelMemberId] = useState("");
   const [delModalOpen, setDelModalOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState("");
@@ -85,11 +85,11 @@ function GroupMembers() {
 
   const handleSnackClose = () => setSnackOpen(false);
 
-  const handleGroupClick = (e) => {
+  const handleMemberClick = (e) => {
     const tagName = e.target.tagName.toUpperCase();
     if (tagName === "PATH" || tagName === "SVG") {
       const button = e.target.closest("button");
-      setDelGroupId(button.attributes.groupid.value);
+      setDelMemberId(button.attributes.groupid.value);
       setDelModalOpen(true);
     }
   }
@@ -99,22 +99,20 @@ function GroupMembers() {
   const handleDelModalConfirm = async () => {
     // close modal
     handleDelModalClose();
-    // delete from server
-    // TODO: delete member from group
-    // let res = await GroupService.deleteGroup(delGroupId);
+    // remove member from group
+    let res = await GroupService.deleteMemberFromGroup(groupId, delMemberId);
     
-    // if (res.status === "OK") {
-    //   // delete from local display list
-    //   // TODO: update group memebers
-    //   setGroup(oldGroups => {
-    //     return oldGroups.filter(oldGroups => oldGroups._id !== delGroupId);
-    //   })
-    //   setSnackSev("info");
-    // }
-    // else {
-    //   setSnackSev("error");
-    // }
-    // setSnackMsg(res.message);
+    if (res.status === "OK") {
+      // delete from local display list
+      setMembers(oldMems => {
+        return oldMems.filter(oldMem => oldMem._id !== delMemberId);
+      })
+      setSnackSev("info");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
     setSnackOpen(true);
   }
 
@@ -156,10 +154,10 @@ function GroupMembers() {
             <Grid item md="auto" className={classes.filter}>
               <NewGroupButton handleCreate={handleCreateGroup} />
             </Grid>
-            <Grid item container direction="column" onClick={handleGroupClick}>
+            <Grid item container direction="column" onClick={handleMemberClick}>
               {
                 members.map((member, index) => (
-                  <Grid item key={`group_card_id_${index}`}>
+                  <Grid item key={`group_member_card_id_${index}`}>
                     <Card className={classes.card}>
                       <Grid container alignItems="center" justify="space-between">
                         <Hidden mdDown>
@@ -198,7 +196,12 @@ function GroupMembers() {
                 ))
               }
             </Grid>
-            <DeleteModal open={delModalOpen} handleClose={handleDelModalClose} handleDelete={handleDelModalConfirm}/>
+            <DeleteModal
+              open={delModalOpen}
+              handleClose={handleDelModalClose}
+              handleDelete={handleDelModalConfirm}
+              p1="Are you sure that you want to remove this user from group?"
+            />
           </Grid>
         )
       }

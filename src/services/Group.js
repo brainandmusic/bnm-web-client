@@ -46,6 +46,17 @@ class GroupService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async deleteMemberFromGroup(groupId, memberId) {
+    const url = `${BACKEND_API_BASE_URL}/groups/${groupId}/members/${memberId}`;
+    const reqOptions = {
+      method: "DELETE",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default GroupService;
