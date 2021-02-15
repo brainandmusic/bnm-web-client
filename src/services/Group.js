@@ -13,6 +13,17 @@ class GroupService {
     return res.data;
   }
 
+  static async getGroup(gid) {
+    const url = `${BACKEND_API_BASE_URL}/groups/${gid}`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
   static async deleteGroup(groupId) {
     const url = `${BACKEND_API_BASE_URL}/groups/${groupId}`;
     const reqOptions = {

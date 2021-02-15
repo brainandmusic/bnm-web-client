@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { useParams } from 'react-router-dom';
 import Card from '@material-ui/core/Card';
 import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
@@ -28,11 +29,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }))
 
-function GroupSearch() {
+function GroupMembers() {
   const classes = useStyles();
   const user = useUser();
+  const { groupId } = useParams();
   const [role, setRole] = useState("participant");
-  const [groups, setGroups] = useState([]);
+  const [group, setGroup] = useState({});
+  const [members, setMembers] = useState([]);
   const [delGroupId, setDelGroupId] = useState("");
   const [delModalOpen, setDelModalOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
@@ -57,16 +60,28 @@ function GroupSearch() {
   }, [user]);
 
   useEffect(() => {
-    async function getGroups() {
-      let res = await GroupService.getGroups();
+    async function getGroup(gid) {
+      let res = await GroupService.getGroup(gid);
       if (res.status === "OK") {
-        setGroups(res.result);
+        setGroup(res.result);
       }
     }
     if (role === "admin") {
-      getGroups();
+      getGroup(groupId);
     }
-  }, [role]);
+  }, [role, groupId]);
+
+  useEffect(()=> {
+    if (group && group.members) {
+      setMembers([]); // clear current members array
+      Promise.all(group.members.map(async (member) => {
+        let res = await UserService.getUser(member);
+        if (res.status === "OK") {
+          setMembers(oldMem => [...oldMem, res.result])
+        }
+      }))
+    }
+  }, [group, group.members]);
 
   const handleSnackClose = () => setSnackOpen(false);
 
@@ -85,47 +100,50 @@ function GroupSearch() {
     // close modal
     handleDelModalClose();
     // delete from server
-    let res = await GroupService.deleteGroup(delGroupId);
+    // TODO: delete member from group
+    // let res = await GroupService.deleteGroup(delGroupId);
     
-    if (res.status === "OK") {
-      // delete from local display list
-      setGroups(oldGroups => {
-        return oldGroups.filter(oldGroups => oldGroups._id !== delGroupId);
-      })
-      setSnackSev("info");
-    }
-    else {
-      setSnackSev("error");
-    }
-    setSnackMsg(res.message);
+    // if (res.status === "OK") {
+    //   // delete from local display list
+    //   // TODO: update group memebers
+    //   setGroup(oldGroups => {
+    //     return oldGroups.filter(oldGroups => oldGroups._id !== delGroupId);
+    //   })
+    //   setSnackSev("info");
+    // }
+    // else {
+    //   setSnackSev("error");
+    // }
+    // setSnackMsg(res.message);
     setSnackOpen(true);
   }
 
   const handleCreateGroup = async (name) => {
-    const groupInfo = {
-      name,
-      creator: localStorage.getItem("uid")
-    }
-    // save new group info to database
-    let res = await GroupService.createGroup(groupInfo);
+    // const groupInfo = {
+    //   name,
+    //   creator: localStorage.getItem("uid")
+    // }
+    // // save new group info to database
+    // // TODO: add new member
+    // let res = await GroupService.createGroup(groupInfo);
 
-    if (res.status === "OK") {
-      // delete from local display list
-      setGroups(oldGroups => {
-        return [...oldGroups, res.result];
-      })
-      setSnackSev("info");
-    }
-    else {
-      setSnackSev("error");
-    }
-    setSnackMsg(res.message);
+    // if (res.status === "OK") {
+    //   // delete from local display list
+    //   setGroups(oldGroups => {
+    //     return [...oldGroups, res.result];
+    //   })
+    //   setSnackSev("info");
+    // }
+    // else {
+    //   setSnackSev("error");
+    // }
+    // setSnackMsg(res.message);
     setSnackOpen(true);
   }
 
   return (
     <Layout
-      title="Groups"
+      title={group.name}
       snackbarOpen={snackOpen}
       handleSnackbarClose={handleSnackClose}
       snackbarMsg={snackMsg}
@@ -140,28 +158,37 @@ function GroupSearch() {
             </Grid>
             <Grid item container direction="column" onClick={handleGroupClick}>
               {
-                groups.map((group, index) => (
+                members.map((member, index) => (
                   <Grid item key={`group_card_id_${index}`}>
                     <Card className={classes.card}>
                       <Grid container alignItems="center" justify="space-between">
                         <Hidden mdDown>
                           <Grid item>
                             <Typography>
-                              <Link href={`/groups/${group._id}/members`} color="inherit" underline="none">
-                              {group._id}
+                              <Link href={`/users/${member._id}`} color="inherit" underline="none">
+                              {member._id}
                               </Link>
                             </Typography>
                           </Grid>
                         </Hidden>
                         <Grid item>
-                        <Typography>
-                              <Link href={`/groups/${group._id}/members`} color="inherit" underline="none">
-                              {group.name}
+                          <Typography>
+                            <Link href={`/users/${member._id}`} color="inherit" underline="none">
+                            {`${member.firstName} ${member.lastName}`}
+                            </Link>
+                          </Typography>
+                        </Grid>
+                        <Hidden mdDown>
+                          <Grid item>
+                            <Typography>
+                              <Link href={`/user/${member._id}`} color="inherit" underline="none">
+                              {member.email}
                               </Link>
                             </Typography>
                           </Grid>
+                        </Hidden>
                         <Grid item>
-                          <IconButton groupid={group._id}>
+                          <IconButton groupid={member._id}>
                             <DeleteIcon color="secondary"/>
                           </IconButton>
                         </Grid>
@@ -180,4 +207,4 @@ function GroupSearch() {
   );
 }
 
-export default GroupSearch;
+export default GroupMembers;
