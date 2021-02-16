@@ -17,6 +17,7 @@ import SignInSide from './pages/SignInSide';
 import SignUpSide from './components/SignUpSide';
 import Studies from './components/Studies';
 import Groups from './pages/Groups';
+import Users from './pages/Users';
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
           <Route path='/signup' children={<SignUpSide />} />
           <PrivateRoute path='/experiments' children={<Experiments />} />
           <PrivateRoute path='/groups' children={<Groups />} />
+          <PrivateRoute path='/users' children={<Users />} />
           <PrivateRoute path='/settings' children={<Settings />} />
           <PrivateRoute path='/studies' children={<Studies />} />
           <PrivateRoute path='/notifications' children={<Notifications />} />
