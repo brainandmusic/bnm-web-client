@@ -61,18 +61,28 @@ class UserService {
     return res.data;
   }
 
-  static signout() {
+  static async signout() {
     const url = `${BACKEND_API_BASE_URL}/users/logout`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       url,
     };
-    let res = axios(options);
+    let res = await axios(options);
     return res.data;
   }
 
-
+  static async setRole(uid, role) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/role`;
+    const options = {
+      method: "PUT",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { role },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
 
   // legacy APIs
 

@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import Card from '@material-ui/core/Card';
-import DeleteIcon from '@material-ui/icons/Delete';
 import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
+import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
+import VerticalAlignTopIcon from '@material-ui/icons/VerticalAlignTop';
 import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
-import DeleteModal from '../modals/DeleteModal';
 import Layout from '../layout/Layout';
-import UsersModalButton from '../buttons/UsersModalButton';
 import UserService from '../../services/User';
-import GroupService from '../../services/Group';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -28,6 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   optWrapper: {
     textAlign: "center",
+    flexGrow: 0,
+    flexShrink: 1,
   }
 }))
 
@@ -36,8 +39,6 @@ function UserSearch() {
   const user = useUser();
   const [role, setRole] = useState("participant");
   const [users, setUsers] = useState([]);
-  const [delMemberId, setDelMemberId] = useState("");
-  const [delModalOpen, setDelModalOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState("");
   const [snackSev, setSnackSev] = useState("info");
@@ -74,78 +75,38 @@ function UserSearch() {
 
   const handleSnackClose = () => setSnackOpen(false);
 
-  const handleMemberClick = (e) => {
+  const handleMenuClick = async (e) => {
+    let selectedUser;
+    let newRole;
     const tagName = e.target.tagName.toUpperCase();
     if (tagName === "PATH" || tagName === "SVG") {
       const button = e.target.closest("button");
-      setDelMemberId(button.attributes.groupid.value);
-      setDelModalOpen(true);
+      selectedUser = button.attributes.groupid.value;
+      newRole = button.attributes.rolename.value;
     }
-  }
+    else if (tagName === "BUTTON") {
+      selectedUser = e.target.attributes.groupid.value;
+      newRole = e.target.attributes.rolename.value;
+    }
 
-  const handleDelModalClose = () => setDelModalOpen(false);
-
-  const handleDelModalConfirm = async () => {
-    // close modal
-    handleDelModalClose();
-    // remove member from group
-    // let res = await GroupService.deleteMemberFromGroup(groupId, delMemberId);
-    
-    // if (res.status === "OK") {
-    //   // delete from local display list
-    //   setMembers(oldMems => {
-    //     return oldMems.filter(oldMem => oldMem._id !== delMemberId);
-    //   });
-
-    //   setGroup(old => {
-    //     old.members = old.members.filter(m => m._id !== delMemberId);
-    //     return old;
-    //   });
-
-    //   setSnackSev("info");
-    // }
-    // else {
-    //   setSnackSev("error");
-    // }
-    // setSnackMsg(res.message);
+    let res = await UserService.setRole(selectedUser, newRole);
+    if (res.status === "OK") {
+      // update local list
+      setUsers(old => {
+        old.forEach(user => {
+          if (user._id === selectedUser) {
+            user.role = newRole;
+          }
+        });
+        return old;
+      });
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
     setSnackOpen(true);
   }
-
-  // const handleAddMembersToGroup = async (newMembers) => {
-  //   const memberIds = newMembers.map(mem => mem._id);
-
-  //   let res = await GroupService.addMembersToGroup(groupId,memberIds);
-  //   if (res.status === "OK") {
-  //     setMembers(old => {
-  //       newMembers.forEach(mem => {
-  //         // deduplicate
-  //         const idx = old.findIndex(user => user._id === mem._id);
-  //         if (idx < 0) {
-  //           old.push(mem);
-  //         }
-  //       });
-  //       return old;
-  //     });
-
-  //     setGroup(old => {
-  //       newMembers.forEach(mem => {
-  //         // deduplicate
-  //         const idx = old.members.findIndex(user => user._id === mem._id);
-  //         if (idx < 0) {
-  //           old.members.push(mem);
-  //         }
-  //       });
-  //       return old;
-  //     });
-
-  //     setSnackSev("info");
-  //   }
-  //   else {
-  //     setSnackSev("error");
-  //   }
-  //   setSnackMsg(res.message);
-  //   setSnackOpen(true);
-  // }
 
   return (
     <Layout
@@ -162,7 +123,7 @@ function UserSearch() {
             <Grid item md="auto" className={classes.filter}>
               <div>search box goes here</div>
             </Grid>
-            <Grid item container direction="column" onClick={handleMemberClick}>
+            <Grid item container direction="column" onClick={handleMenuClick}>
               {
                 users.map((user, index) => (
                   <Grid item key={`user_card_id_${user._id}`}>
@@ -185,7 +146,7 @@ function UserSearch() {
                           </Typography>
                         </Grid>
                         <Hidden mdDown>
-                          <Grid item lg={3}>
+                          <Grid item lg={2}>
                             <Typography>
                               <Link href={`mailto: ${user.email}`} color="inherit" underline="none">
                               {user.email}
@@ -194,16 +155,42 @@ function UserSearch() {
                           </Grid>
                         </Hidden>
                         <Hidden mdDown>
-                          <Grid item lg={2}>
+                          <Grid item lg={1}>
                             <Typography>
                               {user.role}
                             </Typography>
                           </Grid>
                         </Hidden>
-                        <Grid item lg={1} className={classes.optWrapper}>
-                          <IconButton groupid={user._id}>
-                            <DeleteIcon color="secondary"/>
-                          </IconButton>
+                        <Grid item className={classes.optWrapper}>
+                          {
+                            role === "admin" && (user.role === "ra" || user.role === "admin") ? (
+                              <Tooltip title="Set as participant" aria-label="set as participant">
+                                <IconButton groupid={user._id} rolename="participant">
+                                  <VerticalAlignBottomIcon />
+                                </IconButton>
+                              </Tooltip>
+                            ): null
+                          }
+                          {
+                            role === "admin" && (user.role === "participant" || user.role === "admin") ? (
+                              <Tooltip title="Set as RA" aria-label="set as ra">
+                                <IconButton groupid={user._id} rolename="ra">
+                                  {
+                                    user.role === "admin" ? <ArrowDownwardIcon/> : <ArrowUpwardIcon/>
+                                  }
+                                </IconButton>
+                              </Tooltip>
+                            ): null
+                          }
+                          {
+                            role === "admin" && (user.role === "participant" || user.role === "ra") ? (
+                              <Tooltip title="Set as admin" aria-label="set as admin">
+                                <IconButton groupid={user._id} rolename="admin">
+                                  <VerticalAlignTopIcon/>
+                                </IconButton>
+                              </Tooltip>
+                            ): null
+                          }
                         </Grid>
                       </Grid>
                     </Card>
@@ -211,12 +198,6 @@ function UserSearch() {
                 ))
               }
             </Grid>
-            <DeleteModal
-              open={delModalOpen}
-              handleClose={handleDelModalClose}
-              handleDelete={handleDelModalConfirm}
-              p1="Are you sure that you want to remove this user from group?"
-            />
           </Grid>
         )
       }
