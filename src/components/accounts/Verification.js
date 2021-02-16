@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { green } from '@material-ui/core/colors';
-import { useUser } from '../../../contexts/AuthContext';
-import UserService from '../../../services/User';
+import { useUser } from '../../contexts/AuthContext';
+import UserService from '../../services/User';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import Paper from '@material-ui/core/Paper';
 import Typograph from '@material-ui/core/Typography';
@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Verification() {
-  const { email, token } = useParams();
+  const { uid, token } = useParams();
   const history = useHistory();
   const classes = useStyles();
   const user = useUser();
@@ -55,20 +55,23 @@ function Verification() {
   const handleClick = () => history.push('/');
 
   useEffect(() => {
-    setVerifying(true);
-    UserService.verifyEmail(email, token).then(res => {
+    async function verifyEmail() {
+      setVerifying(true);
+      let res = await UserService.verifyEmail(uid, token)
       setVerifying(false);
-      return res.data;
-    }).then(res => {
-      if (res.status !== "OK") {
+      if (res.status === "OK") {
+        localStorage.setItem("auth_token", res.result.auth_token);
+        localStorage.setItem("uid", res.result.uid);
+        user.setIsLoggedIn(true);
+      }
+      else {
         setError(true);
         setErrorMessage(res.message);
-        return;
       }
-      localStorage.setItem("token", res.result.token);
-      user.setIsLoggedIn(true);
-    })
-  }, [email, token]); // eslint-disable-line react-hooks/exhaustive-deps
+    }
+
+    verifyEmail();
+  }, [uid, token]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={classes.root}>

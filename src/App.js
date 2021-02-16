@@ -6,7 +6,7 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { AuthContextProvider } from './contexts/AuthContext';
-import Account from './components/Account';
+import Account from './pages/Accounts';
 import Experiments from './pages/Experiments';
 import Messages from './components/Messages';
 import NotFound from './components/NotFound';
@@ -14,7 +14,7 @@ import Notifications from './components/Notifications';
 import PrivateRoute from './routes/PrivateRoute';
 import Settings from './components/Settings';
 import SignInSide from './pages/SignInSide';
-import SignUpSide from './components/SignUpSide';
+import SignUpSide from './pages/SignUpSide';
 import Studies from './components/Studies';
 import Groups from './pages/Groups';
 import Users from './pages/Users';
@@ -25,7 +25,7 @@ function App() {
       <Router>
         <Switch>
           <PrivateRoute exact path='/' children={<Redirect to="/experiments" />} />
-          <Route path='/account' children={<Account />} />
+          <Route path='/accounts' children={<Account />} />
           <Route path='/login' children={<SignInSide />} />
           <Route path='/signup' children={<SignUpSide />} />
           <PrivateRoute path='/experiments' children={<Experiments />} />

@@ -13,7 +13,7 @@
  */
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import UserService from '../../../services/User';
+import UserService from '../../services/User';
 import { makeStyles } from '@material-ui/core/styles';
 import { green, grey } from '@material-ui/core/colors';
 import CheckCircleOutlineIcon from '@material-ui/icons/CheckCircleOutline';
@@ -67,15 +67,14 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Welcome() {
-  const { email } = useParams();
+  const { uid } = useParams();
   const classes = useStyles();
   const [sending, setSending] = useState(false);
 
-  const handleResendEmail = () => {
+  const handleResendEmail = async () => {
     setSending(true);
-    UserService.sendVerificationEmail(email).then(() => {
-      setSending(false);
-    });
+    await UserService.sendVerificationEmail(uid);
+    setSending(false);
   }
 
   return (
@@ -87,11 +86,11 @@ function Welcome() {
         </Typograph>
         <Typograph gutterBottom>
           Thank you for signing up! In order to make your account more secure, a
-          verification email has been sent to <strong>{email}</strong>. Please complete the verification
+          verification email has been sent to the email address you signed up with. Please complete the verification
           process by clicking the link enclosed in the email.
         </Typograph>
         <Typograph className={classes.muted} gutterBottom>
-          Note: please do check your spam/junk folder in case it's misclassified.
+          Note: no email received? Check spam/junk folders!
         </Typograph>
         <div className={classes.buttonWrapper}>
           <Button

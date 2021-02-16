@@ -1,18 +1,18 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import ForgetPassword from './utils/account/ForgetPassword';
-import ResetPassword from './utils/account/ResetPassword';
-import Verification from './utils/account/Verification';
-import Welcome from './utils/account/Welcome';
+import ForgetPassword from '../components/accounts/ForgetPassword';
+import ResetPassword from '../components/accounts/ResetPassword';
+import Verification from '../components/accounts/Verification';
+import Welcome from '../components/accounts/Welcome';
 
-function Account() {
+function Accounts() {
   const { path } = useRouteMatch();
   return (
     <Switch>
-      <Route path={`${path}/new/welcome/email/:email`}>
+      <Route path={`${path}/:uid/welcome`}>
         <Welcome />
       </Route>
-      <Route path={`${path}/new/verify/email/:email/token/:token`}>
+      <Route path={`${path}/:uid/verify/token/:token`}>
         <Verification />
       </Route>
       <Route path={`${path}/current/forgetpassword`}>
@@ -25,4 +25,4 @@ function Account() {
   );
 }
 
-export default Account;
+export default Accounts;

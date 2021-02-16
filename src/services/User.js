@@ -3,6 +3,18 @@ import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class UserService {
+  static async signup(userInfo) {
+    const url = `${BACKEND_API_BASE_URL}/users/register`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      data: { userInfo },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
   static async signin(email, password) {
     const url = `${BACKEND_API_BASE_URL}/users/login`;
     const options = {
@@ -84,6 +96,28 @@ class UserService {
     return res.data;
   }
 
+  static async sendVerificationEmail(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/account/verify`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async verifyEmail(uid, token) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/account/verify/token/${token}`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
   // legacy APIs
 
   static getProfile() {
@@ -100,41 +134,6 @@ class UserService {
     const options = {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      url,
-    };
-    return axios(options);
-  }
-
-  static signup(firstName, lastName, email, password) {
-    const url = `${BACKEND_API_BASE_URL}/user/register`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ firstName, lastName, email, password }),
-      url,
-    };
-    return axios(options);
-  }
-
-
-
-  static sendVerificationEmail(email) {
-    const url = `${BACKEND_API_BASE_URL}/user/sendVerifyEmail`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email }),
-      url,
-    };
-    return axios(options);
-  }
-
-  static verifyEmail(email, token) {
-    const url = `${BACKEND_API_BASE_URL}/user/verifyEmail`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email, token }),
       url,
     };
     return axios(options);
