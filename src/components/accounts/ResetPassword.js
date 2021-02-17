@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import { deepOrange } from '@material-ui/core/colors';
 import Button from '@material-ui/core/Button';
@@ -10,6 +11,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typograph from '@material-ui/core/Typography';
 import { Link } from '@material-ui/core';
+import UserService from '../../services/User';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -67,12 +69,15 @@ function Alert(props) {
 
 function ResetPassword() {
   const classes = useStyles();
+  const { uid, token } = useParams();
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorPassword, setErrorPassword] = useState(false);
   const [errorConfirmPassword, setErrorConfirmPassword] = useState(false);
   const [resetting, setResetting] = useState(false);
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackStatus, setSnackStatus] = useState("OK");
+  const [snackMsg, setSnackMsg] = useState("");
 
   const validPassword = (password) => {
     return /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,25}$/.test(password);
@@ -95,7 +100,7 @@ function ResetPassword() {
     }
   }
 
-  const handleReset = (e) => {
+  const handleReset = async (e) => {
     e.preventDefault();
     let validForm = true;
 
@@ -109,8 +114,11 @@ function ResetPassword() {
     }
     if (validForm) {
       setResetting(true);
+      let res = await UserService.resetPassword(uid, token, password);
+      setResetting(false);
+      setSnackStatus(res.status);
+      setSnackMsg(res.message);
       handleOpenSnackbar();
-      // history.push('/experiments');
     }
   }
 
@@ -124,9 +132,6 @@ function ResetPassword() {
         <LockOpenIcon className={classes.lockOpenIcon} />
         <Typograph className={classes.title} component="h3" gutterBottom variant="h4">
           RESET PASSWORD
-        </Typograph>
-        <Typograph gutterBottom>
-          Reset password for <strong>w****i@***m</strong>.
         </Typograph>
         <form className={classes.form}>
           <div className={classes.formElement}>
@@ -176,9 +181,15 @@ function ResetPassword() {
           </div>
         </form>
         <Snackbar open={openSnackbar} onClose={handleCloseSnackbar}>
-          <Alert onClose={handleCloseSnackbar} severity="success">
-            Your password has been reset. Please go to {" "}
-            <Link href="/login" color="inherit" underline="always">LOGIN</Link> page to sign in.
+          <Alert onClose={handleCloseSnackbar} severity={snackStatus === "OK" ? "success" : "error"}>
+            {
+              snackStatus === "OK" ? (
+                <>
+                  Your password has been reset. Please go to {" "}
+                  <Link href="/login" color="inherit" underline="always">LOGIN</Link> page to sign in.
+                </>
+              ) : snackMsg
+            }
           </Alert>
         </Snackbar>
       </Paper>

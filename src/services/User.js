@@ -1,5 +1,4 @@
 import axios from "axios";
-import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class UserService {
@@ -118,25 +117,28 @@ class UserService {
     return res.data;
   }
 
-  // legacy APIs
-
-  static getProfile() {
-    const url = `${BACKEND_API_BASE_URL}/user/profile`;
+  static async forgetPassword(email) {
+    const url = `${BACKEND_API_BASE_URL}/users/password/reset`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      headers: { "content-type": "application/json" },
+      data: { email },
       url,
     };
-    return axios(options);
+    let res = await axios(options);
+    return res.data;
   }
-  static isAdmin() {
-    const url = `${BACKEND_API_BASE_URL}/user/admin/get`;
+
+  static async resetPassword(uid, token, password) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/password/reset/token/${token}`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      headers: { "content-type": "application/json" },
+      data: { password },
       url,
     };
-    return axios(options);
+    let res = await axios(options);
+    return res.data;
   }
 }
 

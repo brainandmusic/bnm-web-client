@@ -18,7 +18,7 @@ function Accounts() {
       <Route path={`${path}/current/forgetpassword`}>
         <ForgetPassword />
       </Route>
-      <Route path={`${path}/current/resetpassword/token/:token`}>
+      <Route path={`${path}/:uid/resetpassword/token/:token`}>
         <ResetPassword />
       </Route>
     </Switch>
