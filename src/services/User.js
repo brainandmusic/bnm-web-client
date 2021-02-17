@@ -1,79 +1,144 @@
 import axios from "axios";
-import qs from "qs";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class UserService {
-  static getProfile() {
-    const url = `${BACKEND_API_BASE_URL}/user/profile`;
+  static async signup(userInfo) {
+    const url = `${BACKEND_API_BASE_URL}/users/register`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      headers: { "content-type": "application/json" },
+      data: { userInfo },
       url,
     };
-    return axios(options);
-  }
-  static isAdmin() {
-    const url = `${BACKEND_API_BASE_URL}/user/admin/get`;
-    const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
-      url,
-    };
-    return axios(options);
+    let res = await axios(options);
+    return res.data;
   }
 
-  static signin(email, password) {
-    const url = `${BACKEND_API_BASE_URL}/user/login`;
+  static async signin(email, password) {
+    const url = `${BACKEND_API_BASE_URL}/users/login`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email, password }),
+      headers: { "content-type": "application/json" },
+      data: { email, password },
       url,
     };
-    return axios(options);
+
+    let res = await axios(options);
+    return res.data;
   }
 
-  static signup(firstName, lastName, email, password) {
-    const url = `${BACKEND_API_BASE_URL}/user/register`;
+  static async getRole(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/role`;
     const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ firstName, lastName, email, password }),
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
       url,
     };
-    return axios(options);
+
+    let res = await axios(options);
+    return res.data;
   }
 
-  static signout() {
-    const url = `${BACKEND_API_BASE_URL}/user/logout`;
+  static async getUser(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}`;
     const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded", "authorization": `Bearer ${localStorage.getItem("token")}` },
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
       url,
     };
-    return axios(options);
+
+    let res = await axios(options);
+    return res.data;
   }
 
-  static sendVerificationEmail(email) {
-    const url = `${BACKEND_API_BASE_URL}/user/sendVerifyEmail`;
+  static async getUsers() {
+    const url = `${BACKEND_API_BASE_URL}/users`;
     const options = {
-      method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email }),
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+        "authorization": `Bearer ${localStorage.getItem("auth_token")}`
+      },
       url,
     };
-    return axios(options);
+
+    let res = await axios(options);
+    return res.data;
   }
 
-  static verifyEmail(email, token) {
-    const url = `${BACKEND_API_BASE_URL}/user/verifyEmail`;
+  static async signout() {
+    const url = `${BACKEND_API_BASE_URL}/users/logout`;
     const options = {
       method: "POST",
-      headers: { "content-type": "application/x-www-form-urlencoded" },
-      data: qs.stringify({ email, token }),
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       url,
     };
-    return axios(options);
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async setRole(uid, role) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/role`;
+    const options = {
+      method: "PUT",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { role },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async sendVerificationEmail(uid) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/account/verify`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async verifyEmail(uid, token) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/account/verify/token/${token}`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async forgetPassword(email) {
+    const url = `${BACKEND_API_BASE_URL}/users/password/reset`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      data: { email },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
+  }
+
+  static async resetPassword(uid, token, password) {
+    const url = `${BACKEND_API_BASE_URL}/users/${uid}/password/reset/token/${token}`;
+    const options = {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      data: { password },
+      url,
+    };
+    let res = await axios(options);
+    return res.data;
   }
 }
 

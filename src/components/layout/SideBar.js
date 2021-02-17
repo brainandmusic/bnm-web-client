@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useRouteMatch, useHistory } from "react-router-dom";
-import { useUser } from '../../../contexts/AuthContext';
+import { useRouteMatch } from "react-router-dom";
+import { useUser } from '../../contexts/AuthContext';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
@@ -17,8 +17,11 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
+import PeopleIcon from '@material-ui/icons/People';
+import PeopleOutlineIcon from '@material-ui/icons/PeopleOutline';
 import SettingsIcon from '@material-ui/icons/Settings';
-import UserService from '../../../services/User';
+import UserService from '../../services/User';
+import { cleanLocalStorage } from '../../configs/Helpers';
 
 const drawerWidth = 240;
 const drawerWidthCollapsed = 60;
@@ -33,13 +36,25 @@ const menuArr = [
     icon: <AssignmentIcon />,
     text: "Experiments",
     href: "/experiments",
-    permissions: ["participant", "admin"]
+    permissions: ["participant", "ra", "admin"]
+  },
+  {
+    icon: <PeopleOutlineIcon />,
+    text: "Groups",
+    href: "/groups",
+    permissions: ["admin"]
+  },
+  {
+    icon: <PeopleIcon />,
+    text: "Users",
+    href: "/users",
+    permissions: ["admin"]
   },
   {
     icon: <SettingsIcon />,
     text: "Settings",
     href: "/settings",
-    permissions: ["participant", "admin"]
+    permissions: ["participant", "ra", "admin"]
   },
 ];
 
@@ -102,45 +117,83 @@ const useStyles = makeStyles((theme) => ({
 
 function SideBar({ variant, open, handleClose }) {
   const classes = useStyles();
-  const history = useHistory();
   const user = useUser();
   const { path } = useRouteMatch();
-  const [expand, setExpand] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [expand, setExpand] = useState(
+    localStorage.getItem("sidebar_expand") ?
+      JSON.parse(localStorage.getItem("sidebar_expand")) :
+      true);
+  const [role, setRole] = useState("participant");
   const [menu, setMenu] = useState([]);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
 
   useEffect(() => {
-    UserService.isAdmin().then(res => res.data).then(res => {
-      if (res.status === "INVALID_REQUEST" && res.message === "JWT token is not valid.") {
-        localStorage.removeItem("token");
-        history.push("/");
+    async function getUserName(uid) {
+      const res = await UserService.getUser(uid);
+      if (res.status === "LOGIN_REQUIRED") {
+        cleanLocalStorage();
+        user.setIsLoggedIn(false);
       }
       else if (res.status === "OK") {
-        setIsAdmin(res.result.isAdmin);
+        setFirstName(res.result.firstName);
+        setLastName(res.result.lastName);
       }
-    })
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    };
 
-  useEffect(() => {
-    const newMenu = [];
-    menuArr.forEach((m) => {
-      if ((m.permissions.includes("admin") && isAdmin) ||
-        m.permissions.includes("participant")) {
-        newMenu.push(m);
-      }
-    });
-    setMenu(newMenu);
-  }, [isAdmin]);
+    const uid = localStorage.getItem("uid");
 
-  const handleToggle = () => setExpand(old => !old);
-
-  const handleLogout = () => {
-    handleClose();
-    UserService.signout().then(() => {
+    if (!uid) {
+      // uid should exist if user is loggedin
+      cleanLocalStorage();
       user.setIsLoggedIn(false);
-      localStorage.removeItem("token");
-      history.push("/login");
-    });
+    }
+    else {
+      getUserName(uid);
+    }
+  }, [user]);
+
+  // get user's role
+  useEffect(() => {
+    async function getRole(uid) {
+      let res = await UserService.getRole(uid);
+
+      if (res.status === "LOGIN_REQUIRED") {
+        cleanLocalStorage();
+        user.setIsLoggedIn(false);
+      }
+
+      if (res.status === "OK") {
+        setRole(res.result.role);
+      }
+    }
+
+    const uid = localStorage.getItem("uid");
+
+    if (!uid) {
+      cleanLocalStorage();
+      user.setIsLoggedIn(false);
+    }
+
+    getRole(uid);
+  }, [user]);
+
+  // load side bar menu according to user's role
+  useEffect(() => {
+    const newMenu = menuArr.filter(menu => menu.permissions.includes(role));
+    setMenu(newMenu);
+  }, [role]);
+
+  const handleToggle = () => setExpand(old => {
+    localStorage.setItem("sidebar_expand", !old)
+    return !old;
+  });
+
+  const handleLogout = async () => {
+    handleClose();
+    await UserService.signout();
+    cleanLocalStorage();
+    user.setIsLoggedIn(false);
   }
 
   return (
@@ -164,7 +217,7 @@ function SideBar({ variant, open, handleClose }) {
       <div className={classes.toolbar}>
         <List className={classes.sectionMobile}>
           <ListItem className={classes.justifyContentSpaceBetween}>
-            <Avatar src="https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=Wenhe+Qi" />
+            <Avatar src={`https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=${firstName}+${lastName}`} />
             <Button size="small" variant="outlined" onClick={handleLogout}>Exit</Button>
           </ListItem>
         </List>

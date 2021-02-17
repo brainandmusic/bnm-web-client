@@ -29,15 +29,23 @@ const IOButton = () => {
     toggle={() => setDropdownOpen(!dropdownOpen)}
   >
     <Button id="caret" outline color="secondary"
-      onClick={(e) => {
-        saveToDatabase(
+      onClick={async (e) => {
+        let res = await saveToDatabase(
           store.getState(), experimentId, { removeInternals: e.shiftKey }
-        ).then(res => {
+        );
+        if (res.status === "OK") {
           if (!experimentId) {
             // this is a new experiment, redirect to its page after save for the first time
-            history.push(`/experiments/builder/platform/${platform}/experiment/${res._id}`)
+            history.push(`/experiments/builder/platform/${platform}/experiment/${res.result._id}`)
           }
-        })
+          else {
+            alert('Experiment has been updated successfully.');
+          }
+        }
+        else {
+          alert(`Fail to save experiment: ${res.message}`);
+        }
+
       }}
     >
       <Icon icon="save" weight="l" fallbackWeight="r" />

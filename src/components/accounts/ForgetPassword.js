@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { deepOrange } from '@material-ui/core/colors';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
 import Paper from '@material-ui/core/Paper';
 import TextField from '@material-ui/core/TextField';
 import Typograph from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
+import UserService from '../../services/User';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -39,13 +41,34 @@ const useStyles = makeStyles((theme) => ({
   input: {
     marginRight: theme.spacing(1),
   },
-  button: {
+  buttonProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12,
+  },
+  buttonWrapper: {
+    position: 'relative',
     marginTop: theme.spacing(2),
   },
 }))
 
 function ForgetPassword() {
   const classes = useStyles();
+  const [sending, setSending] = useState(false);
+  const [email, setEmail] = useState("");
+
+  const sendForgetPasswordEmail = async () => {
+    setSending(true);
+    // send the email
+    await UserService.forgetPassword(email);
+    setSending(false);
+  }
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  }
 
   return (
     <div className={classes.root}>
@@ -57,14 +80,17 @@ function ForgetPassword() {
         <Typograph gutterBottom>
           Enter your email address below and we'll send you a link to reset your password.
         </Typograph>
-        <TextField id="forget-password-email" label="Email" className={classes.input} />
-        <Button
-          className={classes.button}
-          variant="contained"
-          color="primary"
-        >
-          Send
-        </Button>
+        <TextField id="forget-password-email" label="Email" className={classes.input} onChange={handleEmailChange} />
+        <div className={classes.buttonWrapper}>
+          <Button
+            variant="outlined"
+            onClick={sendForgetPasswordEmail}
+            disabled={sending}
+          >
+            Send
+          </Button>
+          {sending && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
+        </div>
       </Paper>
     </div>
   );

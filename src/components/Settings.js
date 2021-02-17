@@ -1,5 +1,5 @@
 import React from 'react';
-import Layout from './utils/layout/Layout';
+import Layout from './layout/Layout';
 
 function Settings() {
   return (

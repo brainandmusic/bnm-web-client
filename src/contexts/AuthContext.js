@@ -5,7 +5,7 @@ const AuthContext = React.createContext({
 });
 
 export const useProvideUser = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("token") ? true : false);
+  const [isLoggedIn, setIsLoggedIn] = useState(localStorage.getItem("auth_token") ? true : false);
 
   return {
     isLoggedIn,

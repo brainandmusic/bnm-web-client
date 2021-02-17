@@ -142,7 +142,7 @@ function SignUpSide() {
     }
   }
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
     let validForm = true;
     if (!validFirstName(firstName)) {
@@ -167,26 +167,28 @@ function SignUpSide() {
     }
     if (validForm) {
       setSigningUp(true);
-      UserService.signup(
-        firstName,
-        lastName,
-        email,
-        password
-      ).then(res => {
+      try {
+        let res = await UserService.signup({
+          firstName,
+          lastName,
+          email,
+          password
+        });
         setSigningUp(false);
-        return res.data;
-      }).then(res => {
-        if (res.status !== "OK") {
+
+        if (res.status === "OK") {
+          history.push(`/accounts/${res.result._id}/welcome/`);
+        }
+        else {
           // registration fails, show snackbar
           setSnackbarMessage(res.message);
           handleOpenSnackbar();
-          return;
         }
-        history.push(`/account/new/welcome/email/${email}`);
-      }).catch(error => {
-        setSnackbarMessage(error);
+      }
+      catch (e) {
+        setSnackbarMessage(JSON.stringify(e));
         handleOpenSnackbar();
-      })
+      }
     }
   }
 

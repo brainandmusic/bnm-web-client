@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useUser } from '../../../contexts/AuthContext';
+import { useUser } from '../../contexts/AuthContext';
 import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import UserService from '../../../services/User';
+import UserService from '../../services/User';
+import { cleanLocalStorage } from '../../configs/Helpers';
 
 function AvatarMenu() {
   const user = useUser();
@@ -14,15 +15,29 @@ function AvatarMenu() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
 
+  const getUserName = async (uid) => {
+    const res = await UserService.getUser(uid);
+    if (res.status === "LOGIN_REQUIRED") {
+      cleanLocalStorage();
+      history.go(0);
+    }
+    else if (res.status === "OK") {
+      setFirstName(res.result.firstName);
+      setLastName(res.result.lastName);
+    }
+  };
+
   useEffect(() => {
-    UserService.getProfile().then(res => res.data.result).then(res => {
-      setFirstName(res.firstName);
-      setLastName(res.lastName);
-    }).catch(() => {
-      setFirstName("undefined");
-      setLastName("undefined");
-    })
-  }, []);
+    const uid = localStorage.getItem("uid");
+    if (!uid) {
+      // uid should exist if user is loggedin
+      cleanLocalStorage();
+      user.setIsLoggedIn(false);
+    }
+    else {
+      getUserName(uid);
+    }
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -32,13 +47,11 @@ function AvatarMenu() {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     handleClose();
-    UserService.signout().then(() => {
-      user.setIsLoggedIn(false);
-      localStorage.removeItem("token");
-      history.push("/login");
-    });
+    await UserService.signout();
+    cleanLocalStorage();
+    user.setIsLoggedIn(false);
   }
 
   return (

@@ -85,18 +85,19 @@ function LabjsBuilder({ eid }) {
   }, []);
 
   useEffect(() => {
-    // TODO: there are only two cases currently: 1) new experiment 2) config an existing experiment
-    if (!store) { return; }
-    if (eid) {
-      // TODO: load experiment data from server
-      ExperimentService.getExperiment(eid).then(res => res.data).then(res => {
-        const state = fromObject(JSON.parse(res.result.data));
-        // Hydrate store from resulting object
-        store.dispatch({
-          type: 'HYDRATE', state,
-        });
+    async function loadExperiment() {
+      let res = await ExperimentService.getExperiment(eid);
+      const state = fromObject(JSON.parse(res.result.data));
+      // Hydrate store from resulting object
+      store.dispatch({
+        type: 'HYDRATE', state,
       });
+    }
 
+    if (!store) { return; }
+    // there are only two cases currently: 1) new experiment 2) config an existing experiment
+    if (eid) {
+      loadExperiment();
     }
     else {
       store.dispatch({ type: 'RESET_STATE' });

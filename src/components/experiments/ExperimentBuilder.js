@@ -1,6 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import LabjsBuilder from './builders/labjs/LabjsBuilder';
+import LabjsBuilder from '../utils/experiments/builders/labjs/LabjsBuilder';
 
 function ExperimentBuilder() {
   const { platform, experimentId } = useParams();

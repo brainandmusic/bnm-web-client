@@ -87,14 +87,22 @@ export const stateToDownload = (state, { exportedComponent = 'root',
 export const saveToDatabase = async (state, experimentId, { exportedComponent = 'root', removeInternals = false } = {}) => {
   // stateJSON is a string type
   const stateJSON = stateToJSON(state, exportedComponent, { removeInternals })
-  const updatedExp = {};
-  updatedExp.experimentId = experimentId;
-  updatedExp.name = state.components.root.metadata.title;
-  updatedExp.description = state.components.root.metadata.description;
-  updatedExp.data = stateJSON;
-  updatedExp.platform = "lab.js";
-  !experimentId && (updatedExp.createDate = Date.now());
-
-  const res = await ExperimentService.updateExperiment(updatedExp);
-  return res.data.result;
+  if (experimentId) {
+    // existing experiment
+    const updatedFields = {}
+    updatedFields.name = state.components.root.metadata.title;
+    updatedFields.description = state.components.root.metadata.description;
+    updatedFields.data = stateJSON;
+    return await ExperimentService.updateExperiment(experimentId, updatedFields);
+  }
+  else {
+    // new experiment
+    const expInfo = {};
+    expInfo.name = state.components.root.metadata.title;
+    expInfo.description = state.components.root.metadata.description;
+    expInfo.platform = "lab.js";
+    expInfo.creator = localStorage.getItem("uid");
+    expInfo.data = stateJSON;
+    return await ExperimentService.createExperiment(expInfo);
+  }
 }
