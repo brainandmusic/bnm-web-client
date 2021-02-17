@@ -107,7 +107,8 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
       user.firstName.match(re) ||
       user.lastName.match(re) ||
       user.email.match(re)
-    ))
+    ));
+    setSelectedUserIds([]);
   }, [keyword, users]);
 
   const handleModalOpen = () => {
@@ -124,6 +125,22 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
 
   const handleSelectedUserChange = (param) => {
     setSelectedUserIds(param.rowIds);
+  }
+
+  const handleRowSelected = (param) => {
+    if (param.isSelected) {
+      setSelectedUserIds(old => {
+        if (!old.includes(param.data._id)) {
+          old.push(param.data._id);
+        }
+        return old;
+      })
+    }
+    else {
+      setSelectedUserIds(old => {
+        return old.filter(o => o !== param.data._id);
+      })
+    }
   }
 
   const handleSubmit = () => {
@@ -175,7 +192,7 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
                     autoFocus
                   />
                   <div className={classes.usertable}>
-                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectedUserChange} />
+                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectedUserChange} onRowSelected={handleRowSelected} />
                   </div>
                 </form>
               </Grid>
