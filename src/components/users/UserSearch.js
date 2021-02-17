@@ -7,6 +7,7 @@ import Grid from '@material-ui/core/Grid';
 import Hidden from '@material-ui/core/Hidden';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
+import TextField from '@material-ui/core/TextField';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import VerticalAlignBottomIcon from '@material-ui/icons/VerticalAlignBottom';
@@ -39,6 +40,8 @@ function UserSearch() {
   const user = useUser();
   const [role, setRole] = useState("participant");
   const [users, setUsers] = useState([]);
+  const [keyword, setKeyword] = useState("");
+  const [rows, setRows] = useState([]); // data used in display
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackMsg, setSnackMsg] = useState("");
   const [snackSev, setSnackSev] = useState("info");
@@ -65,6 +68,7 @@ function UserSearch() {
       let res = await UserService.getUsers();
       if (res.status === "OK") {
         setUsers(res.result);
+        setRows(res.result);
       }
     }
 
@@ -100,6 +104,14 @@ function UserSearch() {
         });
         return old;
       });
+      setRows(old => {
+        old.forEach(user => {
+          if (user._id === selectedUser) {
+            user.role = newRole;
+          }
+        });
+        return old;
+      });
     }
     else {
       setSnackSev("error");
@@ -107,6 +119,18 @@ function UserSearch() {
     setSnackMsg(res.message);
     setSnackOpen(true);
   }
+
+  const handleKeywordChange = (e) => {
+    setKeyword(e.target.value);
+  }
+
+  useEffect(() => {
+    var re = new RegExp(keyword, "i");
+    setRows(users.filter(user => user._id.match(re) ||
+      (user.firstName + " " + user.lastName).match(re) ||
+      user.email.match(re)
+    ))
+  }, [keyword, users]);
 
   return (
     <Layout
@@ -121,11 +145,20 @@ function UserSearch() {
         ) : (
           <Grid container direction="column" className={classes.root}>
             <Grid item md="auto" className={classes.filter}>
-              <div>search box goes here</div>
+              <TextField
+                id="outlined-secondary"
+                variant="outlined"
+                color="primary"
+                placeholder="Search for user ID, name, email ..."
+                value={keyword}
+                autoFocus
+                fullWidth
+                onChange={handleKeywordChange}
+              />
             </Grid>
             <Grid item container direction="column" onClick={handleMenuClick}>
               {
-                users.map((user, index) => (
+                rows.map((user, index) => (
                   <Grid item key={`user_card_id_${user._id}`}>
                     <Card className={classes.card}>
                       <Grid container alignItems="center" justify="space-between">
