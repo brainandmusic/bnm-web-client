@@ -15,7 +15,7 @@ import PrivateRoute from './routes/PrivateRoute';
 import Settings from './components/Settings';
 import SignInSide from './pages/SignInSide';
 import SignUpSide from './pages/SignUpSide';
-import Studies from './components/Studies';
+import Studies from './pages/Studies';
 import Groups from './pages/Groups';
 import Users from './pages/Users';
 

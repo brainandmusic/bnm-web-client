@@ -8,7 +8,6 @@ import IconButton from '@material-ui/core/IconButton';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import MoreVertIcon from "@material-ui/icons/MoreVert";
-import TuneIcon from '@material-ui/icons/Tune';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -27,7 +26,7 @@ const useStyles = makeStyles({
   }
 });
 
-function StudyCard() {
+function StudyCard({ study }) {
   const classes = useStyles();
   const history = useHistory();
   const [anchorEl, setAnchorEl] = React.useState(null);
@@ -42,28 +41,25 @@ function StudyCard() {
   };
 
   const handleConfig = () => {
-    history.push('/studies/study/studyId');
+    history.push(`/studies/study/${study._id}`);
   }
 
   return (
     <Card className={classes.root}>
       <CardActionArea onClick={handleConfig}>
         <CardContent>
-          <Typography variant="subtitle2" color="textSecondary">
-            Status
-          </Typography>
+          {/* <Typography variant="subtitle2" color="textSecondary">
+            {study.status}
+          </Typography> */}
           <Typography variant="subtitle1" component="h2" gutterBottom >
-            Study Title
+            {study.name}
           </Typography>
           <Typography variant="body2" color="textSecondary" className={classes.description}>
-            Study description
-        </Typography>
+            {study.description ? study.description : "No description"}
+          </Typography>
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="config study" onClick={handleConfig}>
-          <TuneIcon />
-        </IconButton>
         <IconButton
           aria-label="more options"
           aria-controls="expend-menu"
@@ -89,7 +85,7 @@ function StudyCard() {
           open={menuOpen}
           onClose={handleMenuClose}
         >
-          <MenuItem >
+          <MenuItem onClick={handleMenuClose} studyid={study._id}>
             Delete
           </MenuItem>
         </Menu>
