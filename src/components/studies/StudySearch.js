@@ -143,11 +143,13 @@ function StudySearch() {
         loading && <div>Loading ...</div>
       }
       {
-        !loading && (role === "participant") ? <div>You don't have access to this page.</div> :
-          (
-            <Grid container direction="column" className={classes.root}>
-              <Grid item container className={classes.toolbox}>
-                {/* <Grid item xs={12} md={2} lg={1} className={classes.filter}>
+        !loading && (role === "participant") && <div>You don't have access to this page.</div>
+      }
+      {
+        !loading && (role !== "participant") ? (
+          <Grid container direction="column" className={classes.root}>
+            <Grid item container className={classes.toolbox}>
+              {/* <Grid item xs={12} md={2} lg={1} className={classes.filter}>
                   <FormControl className={classes.formcontrol}>
                     <InputLabel id="study-status-select-label">Status</InputLabel>
                     <Select
@@ -160,28 +162,28 @@ function StudySearch() {
                     </Select>
                   </FormControl>
                 </Grid> */}
-                <Grid item xs={12} md="auto" className={classes.filter}>
-                  <NewStudyButton handleCreated={handleStudyCreated} />
-                </Grid>
+              <Grid item xs={12} md="auto" className={classes.filter}>
+                <NewStudyButton handleCreated={handleStudyCreated} />
               </Grid>
-              <Grid item container className={classes.studies} onClick={handleCardClick}>
-                {
-                  studies.map((study, index) => (
-                    <Grid item xs={12} md={6} lg={2} key={index} className={classes.study}>
-                      <StudyCard study={study} />
-                    </Grid>
-                  ))
-                }
-              </Grid>
-              <DeleteModal
-                p1="Are you sure you want to delete this study?"
-                p2="This is an irrevocable operation."
-                open={delStudyModalOpen}
-                handleClose={handleDelStudyModalClose}
-                handleDelete={handleDeleteStudy}
-              />
             </Grid>
-          )
+            <Grid item container className={classes.studies} onClick={handleCardClick}>
+              {
+                studies.map((study, index) => (
+                  <Grid item xs={12} md={6} lg={2} key={index} className={classes.study}>
+                    <StudyCard study={study} />
+                  </Grid>
+                ))
+              }
+            </Grid>
+            <DeleteModal
+              p1="Are you sure you want to delete this study?"
+              p2="This is an irrevocable operation."
+              open={delStudyModalOpen}
+              handleClose={handleDelStudyModalClose}
+              handleDelete={handleDeleteStudy}
+            />
+          </Grid>
+        ) : null
       }
     </Layout >
   );

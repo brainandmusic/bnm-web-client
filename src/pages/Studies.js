@@ -18,9 +18,7 @@ function Studies() {
         </Layout>
       </Route>
       <Route path={`${path}/study/:studyId`}>
-        <Layout title="Studies">
-          <Study />
-        </Layout>
+        <Study />
       </Route>
     </Switch>
   );
