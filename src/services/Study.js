@@ -80,6 +80,40 @@ class StudyService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async getParticipants(sid) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${sid}/participants`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async addParticipants(studyId, participantIds) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/participants`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { participantIds },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async deleteParticipant(studyId, participantId) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/participants/${participantId}`;
+    const reqOptions = {
+      method: "DELETE",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default StudyService;
