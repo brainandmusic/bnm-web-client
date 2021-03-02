@@ -64,7 +64,7 @@ function Study() {
   const classes = useStyles();
   const user = useUser();
   const [role, setRole] = useState("participant");
-  const [loading, setLoading] = useState("true");
+  const [loading, setLoading] = useState(true);
   const [study, setStudy] = useState({});
   const [value, setValue] = useState(0);
 
@@ -74,6 +74,10 @@ function Study() {
       let res = await UserService.getRole(localStorage.getItem("uid"));
       if (res.status === "OK") {
         setRole(res.result.role);
+        // user has no permission for this page
+        if (res.result.role === "participant") {
+          setLoading(false);
+        }
       }
       else if (res.status === "LOGIN_REQUIRED") {
         cleanLocalStorage();
@@ -98,10 +102,6 @@ function Study() {
     if (role === "admin" || role === "ra") {
       getStudy(studyId);
     }
-    else {
-      // user has no permission for this page
-      setLoading(false);
-    }
   }, [role, studyId]);
 
   const handleChange = (event, newValue) => {
@@ -109,10 +109,20 @@ function Study() {
   };
 
   if (loading) {
-    return <div>Loading ...</div>
+    return (
+      <Layout title="Loading ...">
+        <div>Loading ...</div>
+      </Layout>
+    );
   }
-  else if (role === "participant") {
-    return <div>You don't have access to this page</div>
+  else if (role === "participant" ||
+    (localStorage.getItem("uid") !== study.creator &&
+      !study.members.includes(localStorage.getItem("uid")))) {
+    return (
+      <Layout title="Access Denied">
+        <div>You don't have access to this page</div>
+      </Layout>
+    );
   }
   return (
     <Layout
