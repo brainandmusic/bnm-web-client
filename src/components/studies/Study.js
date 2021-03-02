@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
 import Layout from '../layout/Layout';
+import TeamMemberManager from './TeamMemberManager';
 import StudyService from '../../services/Study';
 import UserService from '../../services/User';
 
@@ -147,7 +148,7 @@ function Study() {
           <Tab label="Arms" {...a11yProps(3)} />
         </Tabs>
         <TabPanel value={value} index={0}>
-          In this tab, admin can add/remove team members to/from the study.
+          <TeamMemberManager studyId={study._id} />
         </TabPanel>
         <TabPanel value={value} index={1}>
           In this tab, admin can add/remove participants to/from the study.

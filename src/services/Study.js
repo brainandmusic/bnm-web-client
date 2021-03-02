@@ -46,6 +46,28 @@ class StudyService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async getMembers(sid) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${sid}/members`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async deleteMember(studyId, memberId) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/members/${memberId}`;
+    const reqOptions = {
+      method: "DELETE",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default StudyService;
