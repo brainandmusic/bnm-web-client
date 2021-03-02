@@ -68,6 +68,18 @@ class StudyService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async addMembers(studyId, memberIds) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/members`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { memberIds },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default StudyService;

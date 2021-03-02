@@ -5,6 +5,7 @@ import { cleanLocalStorage } from '../../configs/Helpers';
 import StudyService from '../../services/Study';
 import UserService from '../../services/User';
 import UserTable from '../tables/UserTable';
+import UsersModalButton from '../buttons/UsersModalButton';
 
 function TeamMemberManager({ studyId }) {
   const user = useUser();
@@ -67,13 +68,35 @@ function TeamMemberManager({ studyId }) {
 
   const handleSnackClose = () => setSnackOpen(false);
 
+  const handleAddMembers = async (Ids) => {
+    let res = await StudyService.addMembers(studyId, Ids);
+    if (res.status === "OK") {
+      // add members to local display
+      setMembers(old => {
+        return old.concat(Ids.filter((Id) => old.indexOf(Id) < 0))
+      });
+      setSnackSev("success");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackOpen(true);
+    setSnackMsg(res.message);
+  }
+
   if (loading) {
     return <div>Loading ...</div>;
   }
   return (
     <Grid container direction="column">
       <Grid item xs={12} md="auto">
-        + Team Member
+        <UsersModalButton
+          buttonLabel="Member"
+          modalTitle="Add Team Member"
+          roles={["admin", "ra"]}
+          submitBtnLabel="Add"
+          onSubmit={handleAddMembers}
+        />
       </Grid>
       <Grid item container direction="column">
         <UserTable

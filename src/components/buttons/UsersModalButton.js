@@ -124,29 +124,12 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
   }
 
   const handleSelectedUserChange = (param) => {
-    setSelectedUserIds(param.rowIds);
-  }
-
-  const handleRowSelected = (param) => {
-    if (param.isSelected) {
-      setSelectedUserIds(old => {
-        if (!old.includes(param.data._id)) {
-          old.push(param.data._id);
-        }
-        return old;
-      })
-    }
-    else {
-      setSelectedUserIds(old => {
-        return old.filter(o => o !== param.data._id);
-      })
-    }
+    setSelectedUserIds(param.selectionModel);
   }
 
   const handleSubmit = () => {
-    const newMembers = users.filter(user => selectedUserIds.includes(user._id));
     handleModalClose();
-    onSubmit(newMembers);
+    onSubmit(selectedUserIds);
   }
 
   return (
@@ -192,7 +175,7 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
                     autoFocus
                   />
                   <div className={classes.usertable}>
-                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionChange={handleSelectedUserChange} onRowSelected={handleRowSelected} />
+                    <DataGrid rows={rows} columns={columns} pageSize={5} checkboxSelection onSelectionModelChange={handleSelectedUserChange} />
                   </div>
                 </form>
               </Grid>
