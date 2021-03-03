@@ -2,8 +2,8 @@ import axios from "axios";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class StudyService {
-  static async getStudies() {
-    const url = `${BACKEND_API_BASE_URL}/studies`;
+  static async getStudies(uid = null) {
+    const url = `${BACKEND_API_BASE_URL}/studies${uid ? ("/?uid=" + uid) : ""}`;
     const reqOptions = {
       method: "GET",
       headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },

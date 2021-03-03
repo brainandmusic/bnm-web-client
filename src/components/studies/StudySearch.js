@@ -78,7 +78,7 @@ function StudySearch() {
   // get studies from server
   useEffect(() => {
     async function getStudies() {
-      let res = await StudyService.getStudies();
+      let res = await StudyService.getStudies(localStorage.getItem("uid"));
       if (res.status === "OK") {
         setStudies(res.result);
       }
