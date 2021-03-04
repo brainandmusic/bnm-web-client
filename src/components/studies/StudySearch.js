@@ -134,7 +134,7 @@ function StudySearch() {
 
   return (
     <Layout
-      title="Groups"
+      title="Studies"
       snackbarOpen={snackOpen}
       handleSnackbarClose={handleSnackClose}
       snackbarMsg={snackMsg}
