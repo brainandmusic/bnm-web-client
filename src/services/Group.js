@@ -2,8 +2,11 @@ import axios from "axios";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class GroupService {
-  static async getGroups() {
-    const url = `${BACKEND_API_BASE_URL}/groups`;
+  static async getGroups(studyId) {
+    let url = `${BACKEND_API_BASE_URL}/groups`;
+    if (studyId) {
+      url = `${BACKEND_API_BASE_URL}/groups?studyId=${studyId}`;
+    }
     const reqOptions = {
       method: "GET",
       headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },

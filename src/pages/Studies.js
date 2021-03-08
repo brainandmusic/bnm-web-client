@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import ExperimentManager from '../components/experiments/ExperimentManager';
+import Group from '../components/groups/Group';
 import Layout from '../components/layout/Layout';
 import Study from '../components/studies/Study';
 import StudySearch from '../components/studies/StudySearch';
@@ -16,6 +17,9 @@ function Studies() {
         <Layout title="Studies">
           <ExperimentManager />
         </Layout>
+      </Route>
+      <Route path={`${path}/study/:studyId/group/:groupId`}>
+        <Group />
       </Route>
       <Route path={`${path}/study/:studyId`}>
         <Study />

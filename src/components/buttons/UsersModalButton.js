@@ -76,7 +76,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSubmit }) {
+function UsersModalButton({ Ids, buttonLabel, modalTitle, roles, submitBtnLabel, onSubmit }) {
   const classes = useStyles();
   const [modalOpen, setModalOpen] = useState(false);
   const [users, setUsers] = useState([]);
@@ -98,8 +98,26 @@ function UsersModalButton({ buttonLabel, modalTitle, roles, submitBtnLabel, onSu
       }
     }
 
-    loadUsers(roles);
-  }, [roles]);
+    async function loadUsersByIds(Ids) {
+      let results = await Promise.all(Ids.map(async (uid) => await UserService.getUser(uid)));
+      results.forEach(res => {
+        if (res.status === "OK") {
+          res.result.id = res.result._id; // add id field for data grid
+          setUsers(old => [...old, res.result]);
+          setRows(old => [...old, res.result]);
+        }
+      });
+    }
+
+    setUsers([]);
+    setRows([]);
+    if (Ids) {
+      loadUsersByIds(Ids);
+    }
+    else {
+      loadUsers(roles);
+    }
+  }, [Ids, roles]);
 
   useEffect(() => {
     var re = new RegExp(keyword, "i");

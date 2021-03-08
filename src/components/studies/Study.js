@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
 import Layout from '../layout/Layout';
+import GroupManager from './GroupManager';
 import ParticipantManager from './ParticipantManager';
 import TeamMemberManager from './TeamMemberManager';
 import StudyService from '../../services/Study';
@@ -165,7 +166,7 @@ function Study() {
           <ParticipantManager studyId={study._id} />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          In this tab, admin can create/modify/delete group from the study.
+          <GroupManager studyId={study._id} />
         </TabPanel>
         <TabPanel value={value} index={3}>
           In this tab, admin can create/modify/delete arm from the study.
