@@ -2,16 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Grid from '@material-ui/core/Grid';
 import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
-import NewGroupButton from '../buttons/NewGroupButton';
+import ArmTable from '../tables/ArmTable';
+import NewArmButton from '../buttons/NewArmButton';
+import StudyService from '../../services/Study';
 import UserService from '../../services/User';
-import GroupTable from '../tables/GroupTable';
-import GroupService from '../../services/Group';
+
+
 
 function GroupManager({ studyId }) {
   const user = useUser();
   const [role, setRole] = useState("participant");
   const [loading, setLoading] = useState(true);
-  const [groups, setGroups] = useState([]);
+  const [arms, setArms] = useState([]);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackSev, setSnackSev] = useState("success");
   const [snackMsg, setSnackMsg] = useState("");
@@ -36,15 +38,15 @@ function GroupManager({ studyId }) {
 
   // get groups from server
   useEffect(() => {
-    async function getGroups(sid) {
-      let res = await GroupService.getGroups(sid);
+    async function getArms(sid) {
+      let res = await StudyService.getArms(sid);
       if (res.status === "OK") {
-        setGroups(res.result);
+        setArms(res.result);
       }
       setLoading(false);
     }
     if (role === "admin" || role === "ra") {
-      getGroups(studyId);
+      getArms(studyId);
     }
     else {
       // user has no permission for this page
@@ -52,12 +54,12 @@ function GroupManager({ studyId }) {
     }
   }, [role, studyId]);
 
-  const handleDeleteGroup = async (gid) => {
-    let res = await GroupService.deleteGroup(gid);
+  const handleDeleteArm = async (aid) => {
+    let res = await StudyService.deleteArm(studyId, aid);
     if (res.status === "OK") {
       setSnackSev("success");
       // remove group from local display
-      setGroups(old => old.filter(group => group._id !== gid));
+      setArms(old => old.filter(group => group._id !== aid));
     }
     else {
       setSnackSev("error");
@@ -68,13 +70,11 @@ function GroupManager({ studyId }) {
 
   const handleSnackClose = () => setSnackOpen(false);
 
-  const handleGroupCreated = (res) => {
+  const handleArmCreated = (res) => {
     if (res.status === "OK") {
-      // add group to local display
-      setGroups(old => {
-        old.push(res.result);
-        return old;
-      });
+      // res.result is the whole study info
+      // extract arm info and update the state
+      setArms(res.result.arms);
       setSnackSev("success");
     }
     else {
@@ -90,14 +90,14 @@ function GroupManager({ studyId }) {
   return (
     <Grid container direction="column">
       <Grid item xs={12} md="auto">
-        <NewGroupButton studyId={studyId} handleCreated={handleGroupCreated} />
+        <NewArmButton studyId={studyId} handleCreated={handleArmCreated} />
       </Grid>
       <Grid item container direction="column">
-        <GroupTable
+        <ArmTable
           studyId={studyId}
-          groups={groups}
-          delModP1="Are you sure that you want to remove this group?"
-          handleDelete={handleDeleteGroup}
+          arms={arms}
+          delModP1="Are you sure that you want to remove this arm?"
+          handleDelete={handleDeleteArm}
           snackOpen={snackOpen}
           snackSev={snackSev}
           snackMsg={snackMsg}
