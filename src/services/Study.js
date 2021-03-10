@@ -115,6 +115,17 @@ class StudyService {
     return res.data;
   }
 
+  static async getArm(sid, aid) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${sid}/arms/${aid}`;
+    const reqOptions = {
+      method: "GET",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
   static async getArms(sid) {
     const url = `${BACKEND_API_BASE_URL}/studies/${sid}/arms`;
     const reqOptions = {
@@ -143,6 +154,29 @@ class StudyService {
       method: "POST",
       headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       data: { armInfo },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async createEvent(studyId, armId, eventInfo) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/arms/${armId}/events`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { eventInfo },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
+  static async deleteEvent(studyId, armId, eventId) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/arms/${armId}/events/${eventId}`;
+    const reqOptions = {
+      method: "DELETE",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
       url,
     };
     let res = await axios(reqOptions);
