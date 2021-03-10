@@ -130,6 +130,8 @@ function Arm() {
           </Grid>
           <Grid item container direction="column">
             <EventTable
+              studyId={studyId}
+              armId={armId}
               events={arm.events || []}
               delModP1="Are you sure that you want to remove this event?"
               handleDelete={handleDeleteEvent}
