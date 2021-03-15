@@ -72,6 +72,8 @@ function ExperimentTable({ expIds = [], delModP1, delModP2, handleDelete, snackO
           <TableRow>
             <TableCell>ID</TableCell>
             <TableCell align="right">Experiment Name</TableCell>
+            <TableCell align="right">Description</TableCell>
+            <TableCell align="right">Platform</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
         </TableHead>
@@ -84,6 +86,8 @@ function ExperimentTable({ expIds = [], delModP1, delModP2, handleDelete, snackO
                 </Link>
               </TableCell>
               <TableCell align="right">{experiment.name}</TableCell>
+              <TableCell align="right">{experiment.description || "N/A"}</TableCell>
+              <TableCell align="right">{experiment.platform}</TableCell>
               <TableCell align="right">
                 <IconButton aria-label="delete" className={classes.margin} size="small" onClick={handleClickDelete} expid={experiment._id}>
                   <DeleteIcon fontSize="small" />
