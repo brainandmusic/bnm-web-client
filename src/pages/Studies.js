@@ -1,6 +1,7 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import Arm from '../components/arms/Arm';
+import Event from '../components/events/Event';
 import ExperimentManager from '../components/experiments/ExperimentManager';
 import Group from '../components/groups/Group';
 import Layout from '../components/layout/Layout';
@@ -21,6 +22,9 @@ function Studies() {
       </Route>
       <Route path={`${path}/study/:studyId/group/:groupId`}>
         <Group />
+      </Route>
+      <Route path={`${path}/study/:studyId/arm/:armId/event/:eventId`}>
+        <Event />
       </Route>
       <Route path={`${path}/study/:studyId/arm/:armId`}>
         <Arm />
