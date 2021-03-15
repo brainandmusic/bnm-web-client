@@ -2,8 +2,8 @@ import axios from "axios";
 import { BACKEND_API_BASE_URL } from '../configs/Constants';
 
 class ExperimentService {
-  static async getExperiments() {
-    const url = `${BACKEND_API_BASE_URL}/experiments`;
+  static async getExperiments(summary = 0) {
+    const url = `${BACKEND_API_BASE_URL}/experiments${summary === 1 ? "/?summary=1" : ""}`;
     const reqOptions = {
       method: "GET",
       headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },

@@ -87,7 +87,7 @@ function ExperimentSearch() {
 
   const loadAdminExperiments = async () => {
     // get all experiments
-    let res = await ExperimentService.getExperiments();
+    let res = await ExperimentService.getExperiments(1);
     if (res.status === "OK") {
       setExperiments(res.result);
     }
