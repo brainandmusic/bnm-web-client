@@ -183,6 +183,18 @@ class StudyService {
     return res.data;
   }
 
+  static async addExperimentsToEvent(studyId, armId, eventId, expIds) {
+    const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/arms/${armId}/events/${eventId}/experiments`;
+    const reqOptions = {
+      method: "POST",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { expIds },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
+
   static async deleteExperiments(studyId, armId, eventId, expIds) {
     const url = `${BACKEND_API_BASE_URL}/studies/${studyId}/arms/${armId}/events/${eventId}/experiments`;
     const reqOptions = {

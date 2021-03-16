@@ -3,10 +3,16 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useParams } from 'react-router-dom';
 import { useUser } from '../../contexts/AuthContext';
 import { cleanLocalStorage } from '../../configs/Helpers';
+import Box from '@material-ui/core/Box';
+import ExperimentsModalButton from '../buttons/ExperimentsModalButton';
 import ExperimentTable from '../tables/ExperimentTable';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Layout from '../layout/Layout';
+import Paper from '@material-ui/core/Paper';
+import PropTypes from 'prop-types';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+
 import StudyService from '../../services/Study';
 import UserService from '../../services/User';
 
@@ -16,6 +22,39 @@ import UserService from '../../services/User';
 // remove experiments from this event
 // assign experiments of current event to individual/group members
 // revoke assignments
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`full-width-tabpanel-${index}`}
+      aria-labelledby={`full-width-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box paddingTop={2}>
+          {children}
+        </Box>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `full-width-tab-${index}`,
+    'aria-controls': `full-width-tabpanel-${index}`,
+  };
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -38,6 +77,11 @@ function Event() {
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackSev, setSnackSev] = useState("success");
   const [snackMsg, setSnackMsg] = useState("");
+  const [tabValue, setTabValue] = useState(0);
+
+  const handleChange = (event, newValue) => {
+    setTabValue(newValue);
+  };
 
   const handleSnackClose = () => setSnackOpen(false);
 
@@ -98,6 +142,23 @@ function Event() {
     }
   }, [role, studyId, armId, eventId]);
 
+  const handleAddExperimentsToEvent = async (expIds) => {
+    let res = await StudyService.addExperimentsToEvent(studyId, armId, eventId, expIds);
+    if (res.status === "OK") {
+      // update local list
+      setEvent(old => {
+        old.experiments = [...new Set([...old.experiments, ...expIds])]
+        return old;
+      });
+      setSnackSev("success");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
+    setSnackOpen(true);
+  }
+
   if (loading) {
     return (
       <Layout title="Loading ...">
@@ -119,24 +180,46 @@ function Event() {
       title={`Event - ${event.name}`}
     >
       <Paper className={classes.root}>
-        <Grid container direction="column">
-          <Grid item xs={12} md="auto">
-            {/* add experiment */}
-            {/* assign participants */}
+        <Tabs
+          value={tabValue}
+          indicatorColor="primary"
+          textColor="primary"
+          onChange={handleChange}
+          aria-label="study tabs"
+          variant="scrollable"
+          scrollButtons="auto"
+        >
+          <Tab label="Experiments" {...a11yProps(0)} />
+          <Tab label="Assignments" {...a11yProps(1)} />
+        </Tabs>
+        <TabPanel value={tabValue} index={0}>
+          <Grid container direction="column">
+            <Grid item xs={12} md="auto">
+              {/* add experiment */}
+              {/* assign participants */}
+              <ExperimentsModalButton
+                buttonLabel="Add Experiments"
+                modalTitle="Select Experiments"
+                submitBtnLabel="Add"
+                onSubmit={handleAddExperimentsToEvent}
+              />
+            </Grid>
+            <Grid item container direction="column">
+              <ExperimentTable
+                expIds={event.experiments}
+                delModP1="Are you sure that you want to remove this experiment?"
+                handleDelete={handleRemoveExperiment}
+                snackOpen={snackOpen}
+                snackSev={snackSev}
+                snackMsg={snackMsg}
+                handleSnackClose={handleSnackClose}
+              />
+            </Grid>
           </Grid>
-          <Grid item container direction="column">
-            <ExperimentTable
-              expIds={event.experiments}
-              delModP1="Are you sure that you want to remove this experiment?"
-              handleDelete={handleRemoveExperiment}
-              snackOpen={snackOpen}
-              snackSev={snackSev}
-              snackMsg={snackMsg}
-              handleSnackClose={handleSnackClose}
-            />
-            {/* show experiments */}
-          </Grid>
-        </Grid>
+        </TabPanel>
+        <TabPanel value={tabValue} index={1}>
+          <div>tab 2</div>
+        </TabPanel>
       </Paper>
     </Layout>
   )
