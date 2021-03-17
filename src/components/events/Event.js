@@ -12,8 +12,12 @@ import Paper from '@material-ui/core/Paper';
 import PropTypes from 'prop-types';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import TransactionTable from '../tables/TransactionTable';
+import UsersModalButton from '../buttons/UsersModalButton';
+import GroupsModalButton from '../buttons/GroupsModalButton';
 
 import StudyService from '../../services/Study';
+import TransactionService from '../../services/Transaction';
 import UserService from '../../services/User';
 
 // get role to determine if user can access this page
@@ -63,6 +67,9 @@ const useStyles = makeStyles((theme) => ({
   },
   divider: {
     marginBottom: theme.spacing(2)
+  },
+  button: {
+    margin: theme.spacing(1)
   }
 }))
 
@@ -74,6 +81,7 @@ function Event() {
   const [loading, setLoading] = useState(true);
   const [study, setStudy] = useState({});
   const [event, setEvent] = useState({});
+  const [transactions, setTransactions] = useState([]);
   const [snackOpen, setSnackOpen] = useState(false);
   const [snackSev, setSnackSev] = useState("success");
   const [snackMsg, setSnackMsg] = useState("");
@@ -135,9 +143,17 @@ function Event() {
       }
     }
 
+    async function getTransactions(eid) {
+      let res = await TransactionService.getTransactions(eid);
+      if (res.status === "OK") {
+        setTransactions(res.result);
+      }
+    }
+
     if (role === "admin" || role === "ra") {
       setLoading(true);
       getStudyAndEvent(studyId, armId, eventId);
+      getTransactions(eventId);
       setLoading(false);
     }
   }, [role, studyId, armId, eventId]);
@@ -150,6 +166,58 @@ function Event() {
         old.experiments = [...new Set([...old.experiments, ...expIds])]
         return old;
       });
+      setSnackSev("success");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
+    setSnackOpen(true);
+  }
+
+  const handleAssignIndividualsToEvent = async (participantIds) => {
+    let res = await TransactionService.createTransaction({
+      studyId,
+      armId,
+      eventId,
+      creator: localStorage.getItem("uid"),
+      participantIds
+    });
+    if (res.status === "OK") {
+      setTransactions(old => [res.result, ...old]);
+      setSnackSev("success");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
+    setSnackOpen(true);
+  }
+
+  const handleAssignGroupsToEvent = async (groupIds) => {
+    let res = await TransactionService.createTransaction({
+      studyId,
+      armId,
+      eventId,
+      creator: localStorage.getItem("uid"),
+      groupIds
+    });
+    if (res.status === "OK") {
+      setTransactions(old => [res.result, ...old]);
+      setSnackSev("success");
+    }
+    else {
+      setSnackSev("error");
+    }
+    setSnackMsg(res.message);
+    setSnackOpen(true);
+  }
+
+  const handleRevokeTransaction = async (transId) => {
+    let res = await TransactionService.deleteTransaction(transId);
+    if (res.status === "OK") {
+      //update local list
+      setTransactions(old => old.filter(trans => trans._id !== transId));
       setSnackSev("success");
     }
     else {
@@ -194,9 +262,7 @@ function Event() {
         </Tabs>
         <TabPanel value={tabValue} index={0}>
           <Grid container direction="column">
-            <Grid item xs={12} md="auto">
-              {/* add experiment */}
-              {/* assign participants */}
+            <Grid item xs={12} md="auto" className={classes.button}>
               <ExperimentsModalButton
                 buttonLabel="Add Experiments"
                 modalTitle="Select Experiments"
@@ -218,7 +284,41 @@ function Event() {
           </Grid>
         </TabPanel>
         <TabPanel value={tabValue} index={1}>
-          <div>tab 2</div>
+          <Grid container direction="column">
+            <Grid item container>
+              <Grid item xs={12} md="auto" className={classes.button}>
+                {/* assign participants */}
+                <UsersModalButton
+                  Ids={study.participants}
+                  buttonLabel="Assign Participants"
+                  modalTitle="Assign Participants"
+                  submitBtnLabel="Assign"
+                  onSubmit={handleAssignIndividualsToEvent}
+                />
+              </Grid>
+              <Grid item xs={12} md="auto" className={classes.button}>
+                <GroupsModalButton
+                  studyId={studyId}
+                  buttonLabel="Assign Groups"
+                  modalTitle="Assign Groups"
+                  submitBtnLabel="Assign"
+                  onSubmit={handleAssignGroupsToEvent}
+                />
+              </Grid>
+            </Grid>
+            <Grid item container direction="column">
+              {/* transaction history table */}
+              <TransactionTable
+                transactions={transactions}
+                delModP1="Are you sure that you want to revoke this assignment?"
+                handleDelete={handleRevokeTransaction}
+                snackOpen={snackOpen}
+                snackSev={snackSev}
+                snackMsg={snackMsg}
+                handleSnackClose={handleSnackClose}
+              />
+            </Grid>
+          </Grid>
         </TabPanel>
       </Paper>
     </Layout>
