@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import ExperimentBuilder from '../components/experiments/ExperimentBuilder';
 import ExperimentSearch from '../components/experiments/ExperimentSearch';
+import Assessment from '../components/assessments/Assessment';
 import Layout from '../components/layout/Layout';
 
 function Experiments() {
@@ -37,6 +38,9 @@ function Experiments() {
             <p>User was tested in thise page</p>
           </div>
         </Layout>
+      </Route>
+      <Route path={`${path}/run/assessment/:assessmentId/experiment/:experimentId`}>
+        <Assessment />
       </Route>
     </Switch>
   );
