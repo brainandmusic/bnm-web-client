@@ -223,6 +223,11 @@ export const makeStudyTree = (state) => {
   return serialize(componentTree, { space: 2 })
 }
 
+export const makeStudyTreeJSON = (state) => {
+  // Process study tree
+  return makeComponentTree(state.components, 'root')
+}
+
 const makeStudyScript = studyTree =>
 `// Define study
 const study = lab.util.fromObject(${ studyTree })

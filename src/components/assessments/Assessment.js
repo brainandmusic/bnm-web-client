@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Typography from '@material-ui/core/Typography';
 
-import { makeStudyTree } from '../utils/experiments/builders/labjs/logic/io/assemble/script';
+import { makeStudyTreeJSON } from '../utils/experiments/builders/labjs/logic/io/assemble/script';
 import ExperimentService from '../../services/Experiment';
 
 const useStyles = makeStyles((theme) => ({
@@ -37,6 +37,15 @@ function Assessment() {
     }
   }
 
+  const jsonToStringWithFunc = (obj) => {
+    return JSON.stringify(obj, function (key, value) {
+      if (typeof value === "function") {
+        return "/Function(" + value.toString() + ")/";
+      }
+      return value;
+    });
+  }
+
   useEffect(() => {
     function clearExpData() {
       localStorage.removeItem("questions");
@@ -47,9 +56,8 @@ function Assessment() {
       setExpDataLoaded(false);
       let res = await ExperimentService.getExperiment(eid);
       if (res.status === "OK") {
-        let studyTree = makeStudyTree(JSON.parse(res.result.data));
-        console.log(JSON.parse(res.result.data))
-        localStorage.setItem("questions", studyTree);
+        let studyTree = makeStudyTreeJSON(JSON.parse(res.result.data));
+        localStorage.setItem("questions", jsonToStringWithFunc(studyTree));
         setExperiment(res.result);
       }
       setExpDataLoaded(true);
