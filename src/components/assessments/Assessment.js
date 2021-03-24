@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 
 import { makeStudyTreeJSON } from '../utils/experiments/builders/labjs/logic/io/assemble/script';
 import ExperimentService from '../../services/Experiment';
+import AssessmentService from '../../services/Assessment';
 
 const useStyles = makeStyles((theme) => ({
   heading: {
@@ -31,9 +32,16 @@ function Assessment() {
   const [expPageOpen, setExpPageOpen] = useState(false);
   const [expRespSaved, setExpRespSaved] = useState(false);
 
-  const handleLocalStorageChange = (e) => {
+  const handleLocalStorageChange = async (e) => {
     if (e.key === "expStatus" && e.newValue === "complete") {
-      alert(e.newValue);
+      let res = await AssessmentService.updateAssessment(assessmentId, {
+        status: "complete",
+        answer: JSON.parse(localStorage.getItem("answer")),
+        completeDate: Date.now()
+      });
+      if (res.status === "OK") {
+        setExpRespSaved(true);
+      }
     }
   }
 

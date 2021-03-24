@@ -12,6 +12,18 @@ class AssessmentService {
     let res = await axios(reqOptions);
     return res.data;
   }
+
+  static async updateAssessment(aid, assessmentInfo) {
+    const url = `${BACKEND_API_BASE_URL}/assessments/${aid}`;
+    const reqOptions = {
+      method: "PUT",
+      headers: { "content-type": "application/json", "authorization": `Bearer ${localStorage.getItem("auth_token")}` },
+      data: { assessmentInfo },
+      url,
+    };
+    let res = await axios(reqOptions);
+    return res.data;
+  }
 }
 
 export default AssessmentService;
