@@ -51,7 +51,7 @@ function AssessmentCard({ _id, assignDate, status, experimentId, participantId }
 
   return loading ? (<div>Loading ...</div>) : (
     <Card className={classes.root}>
-      <CardActionArea onClick={handleRunExp}>
+      <CardActionArea onClick={status === "pending" ? handleRunExp : null}>
         <CardContent>
           <Typography variant="subtitle1" component="h2" gutterBottom >
             {experiment.name}
@@ -62,9 +62,9 @@ function AssessmentCard({ _id, assignDate, status, experimentId, participantId }
         </CardContent>
       </CardActionArea>
       <CardActions disableSpacing>
-        <IconButton aria-label="start experiment" onClick={handleRunExp}>
+        {status === "pending" && <IconButton aria-label="start experiment" onClick={handleRunExp}>
           <PlayArrowIcon />
-        </IconButton>
+        </IconButton>}
       </CardActions>
     </Card >
   )
