@@ -108,8 +108,8 @@ function GroupTable({ transactions, delModP1, delModP2, handleDelete, snackOpen,
         <TableHead>
           <TableRow>
             <TableCell>ID</TableCell>
-            <TableCell align="right">Group IDs</TableCell>
-            <TableCell align="right">Individual Participant IDs</TableCell>
+            <TableCell align="right">Group Names</TableCell>
+            <TableCell align="right">Individual Participant Names</TableCell>
             <TableCell align="right">Date</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
