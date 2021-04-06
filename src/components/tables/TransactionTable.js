@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
 import IconButton from '@material-ui/core/IconButton';
+import Link from '@material-ui/core/Link';
 import MuiAlert from '@material-ui/lab/Alert';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -117,7 +118,11 @@ function GroupTable({ transactions, delModP1, delModP2, handleDelete, snackOpen,
         <TableBody>
           {transactions.map((transaction) => (
             <TableRow key={transaction._id}>
-              <TableCell component="th" scope="row">{transaction._id}</TableCell>
+              <TableCell component="th" scope="row">
+                <Link href={`/transactions/${transaction._id}`} color="inherit" underline="none">
+                  {transaction._id}
+                </Link>
+              </TableCell>
               <TableCell align="right">
                 <GroupNames groupIds={transaction.groupIds} />
               </TableCell>

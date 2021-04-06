@@ -22,23 +22,6 @@ function Experiments() {
           <ExperimentBuilder />
         </Layout>
       </Route>
-      <Route path={`${path}/run/platform/:platform/project/:pid/experiment/:eid/complete`}>
-        <Layout title="Experiments">
-          <div>
-            <h2>Experiment complete page</h2>
-            <p>Participant will be redirected here after compeleting the experiment.</p>
-            <p>We could also add some short survey like star rating how noisy the env is during the experiment.</p>
-          </div>
-        </Layout>
-      </Route>
-      <Route path={`${path}/run/platform/:platform/project/:pid/experiment/:eid`}>
-        <Layout title="Experiments">
-          <div>
-            <h2>Experiment runner page</h2>
-            <p>User was tested in thise page</p>
-          </div>
-        </Layout>
-      </Route>
       <Route path={`${path}/run/assessment/:assessmentId/experiment/:experimentId`}>
         <Assessment />
       </Route>

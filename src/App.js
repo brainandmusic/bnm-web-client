@@ -8,6 +8,7 @@ import {
 import { AuthContextProvider } from './contexts/AuthContext';
 import Account from './pages/Accounts';
 import Experiments from './pages/Experiments';
+import Groups from './pages/Groups';
 import Messages from './components/Messages';
 import NotFound from './components/NotFound';
 import Notifications from './components/Notifications';
@@ -16,7 +17,7 @@ import Settings from './components/Settings';
 import SignInSide from './pages/SignInSide';
 import SignUpSide from './pages/SignUpSide';
 import Studies from './pages/Studies';
-import Groups from './pages/Groups';
+import Transactions from './pages/Transactions';
 import Users from './pages/Users';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
           <PrivateRoute path='/users' children={<Users />} />
           <PrivateRoute path='/settings' children={<Settings />} />
           <PrivateRoute path='/studies' children={<Studies />} />
+          <PrivateRoute path='/transactions' children={<Transactions />} />
           <PrivateRoute path='/notifications' children={<Notifications />} />
           <PrivateRoute path='/messages' children={<Messages />} />
           <Route path='*' children={<NotFound />} />
