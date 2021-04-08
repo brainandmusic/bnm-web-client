@@ -13,6 +13,7 @@ import Messages from './components/Messages';
 import NotFound from './components/NotFound';
 import Notifications from './components/Notifications';
 import PrivateRoute from './routes/PrivateRoute';
+import Reports from './pages/Reports';
 import Settings from './components/Settings';
 import SignInSide from './pages/SignInSide';
 import SignUpSide from './pages/SignUpSide';
@@ -32,6 +33,7 @@ function App() {
           <PrivateRoute path='/experiments' children={<Experiments />} />
           <PrivateRoute path='/groups' children={<Groups />} />
           <PrivateRoute path='/users' children={<Users />} />
+          <PrivateRoute path='/reports' children={<Reports />} />
           <PrivateRoute path='/settings' children={<Settings />} />
           <PrivateRoute path='/studies' children={<Studies />} />
           <PrivateRoute path='/transactions' children={<Transactions />} />
