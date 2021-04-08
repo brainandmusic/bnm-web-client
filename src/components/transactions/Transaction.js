@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import Button from '@material-ui/core/Button';
 import DeleteModal from '../modals/DeleteModal';
 import Layout from '../layout/Layout';
@@ -28,6 +28,7 @@ function Record({ assessment, revokeCb }) {
   const [participant, setParticipant] = useState({});
   const [experiment, setExperiment] = useState({});
   const [loading, setLoading] = useState(true);
+  const history = useHistory();
 
   useEffect(() => {
     async function getParticipant(pid) {
@@ -57,6 +58,11 @@ function Record({ assessment, revokeCb }) {
   const handleRevokeClick = (e) => {
     revokeCb(e.target.closest("button").getAttribute('aid'));
   }
+
+  const handleViewClick = (e) => {
+    const aid = e.target.closest("button").getAttribute('aid');
+    history.push(`/reports/${aid}`);
+  }
   return loading ? (<div>Loading ...</div>) : (
     <TableRow>
       <TableCell>
@@ -67,7 +73,9 @@ function Record({ assessment, revokeCb }) {
       <TableCell align="right">{assessment.status}</TableCell>
       <TableCell align="right">{assessment.completeDate ? assessment.completeDate : ""}</TableCell>
       <TableCell align="right">
-        {assessment.status === "complete" ? (<Button size="small">View</Button>) : null}
+        {assessment.status === "complete" ? (
+          <Button size="small" aid={assessment._id} onClick={handleViewClick}>View</Button>
+        ) : null}
         {assessment.status === "complete" ? null : (
           <Button size="small" aid={assessment._id} onClick={handleRevokeClick}>Revoke</Button>
         )}
