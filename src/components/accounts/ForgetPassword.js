@@ -3,11 +3,17 @@ import { makeStyles } from '@material-ui/core/styles';
 import { deepOrange } from '@material-ui/core/colors';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import LockOpenIcon from '@material-ui/icons/LockOpen';
+import MuiAlert from '@material-ui/lab/Alert';
 import Paper from '@material-ui/core/Paper';
+import Snackbar from '@material-ui/core/Snackbar';
 import TextField from '@material-ui/core/TextField';
 import Typograph from '@material-ui/core/Typography';
 import { Button } from '@material-ui/core';
 import UserService from '../../services/User';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -58,11 +64,30 @@ function ForgetPassword() {
   const classes = useStyles();
   const [sending, setSending] = useState(false);
   const [email, setEmail] = useState("");
+  const [sentResOpen, setSentResOpen] = useState(false);
+  const [sentResSeverity, setSentResSeverity] = useState("success");
+  const [sentResMsg, setSentResMsg] = useState("");
+
+  const handleSentResClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setSentResOpen(false);
+  };
 
   const sendForgetPasswordEmail = async () => {
     setSending(true);
     // send the email
-    await UserService.forgetPassword(email);
+    let res = await UserService.forgetPassword(email);
+    if (res.status === "OK") {
+      setSentResSeverity("success");
+    }
+    else {
+      setSentResSeverity("error");
+    }
+    setSentResMsg(res.message);
+    setSentResOpen(true);
     setSending(false);
   }
 
@@ -91,6 +116,11 @@ function ForgetPassword() {
           </Button>
           {sending && <CircularProgress className={classes.buttonProgress} color="secondary" size={24} />}
         </div>
+        <Snackbar open={sentResOpen} autoHideDuration={6000} onClose={handleSentResClose}>
+          <Alert onClose={handleSentResClose} severity={sentResSeverity}>
+            {sentResMsg}
+          </Alert>
+        </Snackbar>
       </Paper>
     </div>
   );
