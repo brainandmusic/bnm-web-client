@@ -140,6 +140,13 @@ function Study() {
         </Typography>
         <Divider className={classes.divider} />
         <Typography component="h1" variant="subtitle1" gutterBottom>
+          Study ID
+        </Typography>
+        <Typography component="h2" variant="h4" gutterBottom>
+          {study._id}
+        </Typography>
+        <Divider className={classes.divider} />
+        <Typography component="h1" variant="subtitle1" gutterBottom>
           Study Description
         </Typography>
         <Typography component="h2" variant="h4" gutterBottom>
