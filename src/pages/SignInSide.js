@@ -91,7 +91,7 @@ function SignInSide() {
     e.preventDefault();
 
     setSigningIn(true);
-    const res = await UserService.signin(email, password);
+    const res = await UserService.signin(email.toLowerCase(), password);
     setSigningIn(false);
 
     // display error message

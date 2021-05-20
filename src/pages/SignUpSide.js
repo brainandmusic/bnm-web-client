@@ -171,7 +171,7 @@ function SignUpSide() {
         let res = await UserService.signup({
           firstName,
           lastName,
-          email,
+          email: email.toLowerCase(),
           password
         });
         setSigningUp(false);

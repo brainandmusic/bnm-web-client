@@ -79,7 +79,7 @@ function ForgetPassword() {
   const sendForgetPasswordEmail = async () => {
     setSending(true);
     // send the email
-    let res = await UserService.forgetPassword(email);
+    let res = await UserService.forgetPassword(email.toLowerCase());
     if (res.status === "OK") {
       setSentResSeverity("success");
     }
