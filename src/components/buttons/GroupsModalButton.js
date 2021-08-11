@@ -171,7 +171,7 @@ function GroupsModalButton({ studyId, buttonLabel, modalTitle, submitBtnLabel, o
                     id="outlined-secondary"
                     variant="outlined"
                     color="primary"
-                    placeholder="Search for user ID, name, email ..."
+                    placeholder="Search for experiment ID, name, email ..."
                     value={keyword}
                     onChange={handleKeywordChange}
                     autoFocus

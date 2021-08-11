@@ -149,7 +149,7 @@ function UserSearch() {
                 id="outlined-secondary"
                 variant="outlined"
                 color="primary"
-                placeholder="Search for user ID, name, email ..."
+                placeholder="Search for experiment ID, name, email ..."
                 value={keyword}
                 autoFocus
                 fullWidth

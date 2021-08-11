@@ -187,7 +187,7 @@ function UsersModalButton({ Ids, buttonLabel, modalTitle, roles, submitBtnLabel,
                     id="outlined-secondary"
                     variant="outlined"
                     color="primary"
-                    placeholder="Search for user ID, name, email ..."
+                    placeholder="Search for experiment ID, name, email ..."
                     value={keyword}
                     onChange={handleKeywordChange}
                     autoFocus

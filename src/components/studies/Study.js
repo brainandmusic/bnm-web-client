@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Paper from '@material-ui/core/Paper';
-import PropTypes from 'prop-types';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Typography from '@material-ui/core/Typography';
-import { useUser } from '../../contexts/AuthContext';
-import { cleanLocalStorage } from '../../configs/Helpers';
-import Layout from '../layout/Layout';
-import ArmManager from './ArmManager';
-import GroupManager from './GroupManager';
-import ParticipantManager from './ParticipantManager';
-import TeamMemberManager from './TeamMemberManager';
-import StudyService from '../../services/Study';
-import UserService from '../../services/User';
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { makeStyles } from "@material-ui/core/styles";
+import Box from "@material-ui/core/Box";
+import Divider from "@material-ui/core/Divider";
+import Paper from "@material-ui/core/Paper";
+import PropTypes from "prop-types";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Typography from "@material-ui/core/Typography";
+import { useUser } from "../../contexts/AuthContext";
+import { cleanLocalStorage } from "../../configs/Helpers";
+import Layout from "../layout/Layout";
+import ArmManager from "./ArmManager";
+import GroupManager from "./GroupManager";
+import ParticipantManager from "./ParticipantManager";
+import TeamMemberManager from "./TeamMemberManager";
+import StudyService from "../../services/Study";
+import UserService from "../../services/User";
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -29,11 +29,7 @@ function TabPanel(props) {
       aria-labelledby={`full-width-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box paddingTop={2}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box paddingTop={2}>{children}</Box>}
     </div>
   );
 }
@@ -41,26 +37,25 @@ function TabPanel(props) {
 TabPanel.propTypes = {
   children: PropTypes.node,
   index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
 };
 
 function a11yProps(index) {
   return {
     id: `full-width-tab-${index}`,
-    'aria-controls': `full-width-tabpanel-${index}`,
+    "aria-controls": `full-width-tabpanel-${index}`
   };
 }
 
-
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     padding: theme.spacing(2),
-    width: '100%',
+    width: "100%"
   },
   divider: {
     marginBottom: theme.spacing(2)
   }
-}))
+}));
 
 function Study() {
   const { studyId } = useParams();
@@ -81,8 +76,7 @@ function Study() {
         if (res.result.role === "participant") {
           setLoading(false);
         }
-      }
-      else if (res.status === "LOGIN_REQUIRED") {
+      } else if (res.status === "LOGIN_REQUIRED") {
         cleanLocalStorage();
         user.setIsLoggedIn(false);
       }
@@ -117,10 +111,11 @@ function Study() {
         <div>Loading ...</div>
       </Layout>
     );
-  }
-  else if (role === "participant" ||
+  } else if (
+    role === "participant" ||
     (localStorage.getItem("uid") !== study.creator &&
-      !study.members.includes(localStorage.getItem("uid")))) {
+      !study.members.includes(localStorage.getItem("uid")))
+  ) {
     return (
       <Layout title="Access Denied">
         <div>You don't have access to this page</div>
@@ -128,28 +123,19 @@ function Study() {
     );
   }
   return (
-    <Layout
-      title={`Study - ${study.name}`}
-    >
+    <Layout title={`Study - ${study.name}`}>
       <Paper className={classes.root}>
-        <Typography component="h1" variant="subtitle1" gutterBottom>
-          Study Title
-        </Typography>
-        <Typography component="h2" variant="h4" gutterBottom>
+        <Typography component="h1" variant="h2">
           {study.name}
         </Typography>
-        <Divider className={classes.divider} />
-        <Typography component="h1" variant="subtitle1" gutterBottom>
-          Study ID
-        </Typography>
-        <Typography component="h2" variant="h4" gutterBottom>
-          {study._id}
+        <Typography component="caption" display="block">
+          ID - {study._id}
         </Typography>
         <Divider className={classes.divider} />
-        <Typography component="h1" variant="subtitle1" gutterBottom>
-          Study Description
+        <Typography component="h2" variant="h6" gutterBottom>
+          Description
         </Typography>
-        <Typography component="h2" variant="h4" gutterBottom>
+        <Typography component="body" variant="body2" gutterBottom>
           {study.description || "N/A"}
         </Typography>
         <Divider className={classes.divider} />
