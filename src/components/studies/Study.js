@@ -128,7 +128,7 @@ function Study() {
         <Typography component="h1" variant="h2">
           {study.name}
         </Typography>
-        <Typography component="caption" display="block">
+        <Typography variant="caption" display="block">
           ID - {study._id}
         </Typography>
         <Divider className={classes.divider} />
