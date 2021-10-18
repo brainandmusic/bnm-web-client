@@ -83,7 +83,7 @@ function StudySearch() {
       }
       setLoading(false);
     }
-    if (role === "admin" || role === "ra") {
+    if (role === "admin") {
       getStudies();
     } else {
       // user has no permission for this page

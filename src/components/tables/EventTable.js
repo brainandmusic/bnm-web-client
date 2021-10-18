@@ -1,18 +1,18 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Link from '@material-ui/core/Link';
-import MuiAlert from '@material-ui/lab/Alert';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import Snackbar from '@material-ui/core/Snackbar';
-import DeleteModal from '../modals/DeleteModal';
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import DeleteIcon from "@material-ui/icons/Delete";
+import IconButton from "@material-ui/core/IconButton";
+import Link from "@material-ui/core/Link";
+import MuiAlert from "@material-ui/lab/Alert";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import Snackbar from "@material-ui/core/Snackbar";
+import DeleteModal from "../modals/DeleteModal";
 
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -21,11 +21,22 @@ function Alert(props) {
 const useStyles = makeStyles({
   table: {
     maxWidth: "100%",
-    overflow: "scroll",
-  },
+    overflow: "scroll"
+  }
 });
 
-function EventTable({ studyId, armId, events, delModP1, delModP2, handleDelete, snackOpen, handleSnackClose, snackSev, snackMsg }) {
+function EventTable({
+  studyId,
+  armId,
+  events,
+  delModP1,
+  delModP2,
+  handleDelete,
+  snackOpen,
+  handleSnackClose,
+  snackSev,
+  snackMsg
+}) {
   const classes = useStyles();
   const [delUid, setDelUid] = useState("");
   const [delModalOpen, setDelModalOpen] = useState(false);
@@ -33,37 +44,47 @@ function EventTable({ studyId, armId, events, delModP1, delModP2, handleDelete, 
   const handleDelModalOpen = () => setDelModalOpen(true);
   const handleDelModalClose = () => setDelModalOpen(false);
 
-  const handleClickDelete = (e) => {
+  const handleClickDelete = e => {
     handleDelModalOpen();
-    setDelUid(e.target.closest("button").getAttribute('eventid'));
-  }
+    setDelUid(e.target.closest("button").getAttribute("eventid"));
+  };
 
   const handleProcessDelete = () => {
     handleDelModalClose();
     handleDelete && handleDelete(delUid);
-  }
+  };
 
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="event table">
         <TableHead>
           <TableRow>
+            <TableCell>Event Name</TableCell>
             <TableCell>ID</TableCell>
-            <TableCell align="right">Event Name</TableCell>
-            <TableCell align="right">Actions</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {events.map((event) => (
+          {events.map(event => (
             <TableRow key={event._id}>
+              <TableCell>{event.name}</TableCell>
               <TableCell component="th" scope="row">
-                <Link href={`/studies/study/${studyId}/arm/${armId}/event/${event._id}`} color="inherit" underline="none">
+                <Link
+                  href={`/studies/study/${studyId}/arm/${armId}/event/${event._id}`}
+                  color="inherit"
+                  underline="none"
+                >
                   {event._id}
                 </Link>
               </TableCell>
-              <TableCell align="right">{event.name}</TableCell>
-              <TableCell align="right">
-                <IconButton aria-label="delete" className={classes.margin} size="small" onClick={handleClickDelete} eventid={event._id}>
+              <TableCell>
+                <IconButton
+                  aria-label="delete"
+                  className={classes.margin}
+                  size="small"
+                  onClick={handleClickDelete}
+                  eventid={event._id}
+                >
                   <DeleteIcon fontSize="small" />
                 </IconButton>
               </TableCell>
@@ -78,7 +99,11 @@ function EventTable({ studyId, armId, events, delModP1, delModP2, handleDelete, 
         handleClose={handleDelModalClose}
         handleDelete={handleProcessDelete}
       />
-      <Snackbar open={snackOpen} autoHideDuration={3000} onClose={handleSnackClose}>
+      <Snackbar
+        open={snackOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackClose}
+      >
         <Alert onClose={handleSnackClose} severity={snackSev}>
           {snackMsg}
         </Alert>
