@@ -1,12 +1,12 @@
-import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import Arm from '../components/arms/Arm';
-import Event from '../components/events/Event';
-import ExperimentManager from '../components/experiments/ExperimentManager';
-import Group from '../components/groups/Group';
-import Layout from '../components/layout/Layout';
-import Study from '../components/studies/Study';
-import StudySearch from '../components/studies/StudySearch';
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import Arm from "components/arms/Arm";
+import Event from "components/events/Event";
+import ExperimentManager from "components/experiments/ExperimentManager";
+import Group from "components/groups/Group";
+import Layout from "components/layout/Layout";
+import Study from "components/studies/Study";
+import StudySearch from "components/studies/StudySearch";
 
 function Studies() {
   const { path } = useRouteMatch();

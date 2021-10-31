@@ -1,9 +1,9 @@
-import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import ForgetPassword from '../components/accounts/ForgetPassword';
-import ResetPassword from '../components/accounts/ResetPassword';
-import Verification from '../components/accounts/Verification';
-import Welcome from '../components/accounts/Welcome';
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import ForgetPassword from "components/accounts/ForgetPassword";
+import ResetPassword from "components/accounts/ResetPassword";
+import Verification from "components/accounts/Verification";
+import Welcome from "components/accounts/Welcome";
 
 function Accounts() {
   const { path } = useRouteMatch();

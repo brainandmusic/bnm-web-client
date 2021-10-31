@@ -1,17 +1,17 @@
 import React from "react";
 import { Route, Switch, useRouteMatch } from "react-router-dom";
-import UserSearch from "../components/users/UserSearch";
-import UserProfile from "../components/users/UserProfile";
+import GroupSearch from "components/groups/GroupSearch";
+import GroupMembers from "components/groups/GroupMembers";
 
-function Users() {
+function Groups() {
   const { path } = useRouteMatch();
   return (
     <Switch>
       <Route exact path={path}>
-        <UserSearch />
+        <GroupSearch />
       </Route>
-      <Route path={`${path}/:userId`}>
-        <UserProfile />
+      <Route path={`${path}/:groupId/members`}>
+        <GroupMembers />
       </Route>
       {/* <Route path={`${path}/builder/platform/:platform/experiment/:experimentId`}>
         <Layout title="Experiments">
@@ -22,4 +22,4 @@ function Users() {
   );
 }
 
-export default Users;
+export default Groups;

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
-import Transaction from '../components/transactions/Transaction';
+import React from "react";
+import { Route, Switch, useRouteMatch } from "react-router-dom";
+import Transaction from "components/transactions/Transaction";
 
 function Transactions() {
   const { path } = useRouteMatch();

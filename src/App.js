@@ -5,22 +5,22 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
-import { AuthContextProvider } from "./contexts/AuthContext";
-import Account from "./pages/Accounts";
-import Experiments from "./pages/Experiments";
-import Groups from "./pages/Groups";
-import Messages from "./components/Messages";
-import NotFound from "./components/NotFound";
-import Notifications from "./components/Notifications";
-import PrivateRoute from "./routes/PrivateRoute";
-import Reports from "./pages/Reports";
-import Settings from "./components/Settings";
-import Entry from "./pages/Entry";
-import SignInSide from "./pages/SignInSide";
-import SignUpSide from "./pages/SignUpSide";
-import Studies from "./pages/Studies";
-import Transactions from "./pages/Transactions";
-import Users from "./pages/Users";
+import { AuthContextProvider } from "contexts/AuthContext";
+import Account from "routes/pages/Accounts";
+import Experiments from "routes/pages/Experiments";
+import Groups from "routes/pages/Groups";
+import Messages from "components/Messages";
+import NotFound from "components/NotFound";
+import Notifications from "components/Notifications";
+import PrivateRoute from "routes/PrivateRoute";
+import Reports from "routes/pages/Reports";
+import Settings from "components/Settings";
+import Entry from "routes/pages/Entry";
+import SignInSide from "routes/pages/SignInSide";
+import SignUpSide from "routes/pages/SignUpSide";
+import Studies from "routes/pages/Studies";
+import Transactions from "routes/pages/Transactions";
+import Users from "routes/pages/Users";
 
 function App() {
   return (
