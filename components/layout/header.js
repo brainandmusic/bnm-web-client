@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { NextLinkComposed } from "src/Link";
 import Image from "next/Image";
 
 import { signIn, signOut, useSession } from "next-auth/react";
@@ -17,9 +17,14 @@ import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 
+import Tab from "@mui/material/Tab";
+import TabContext from "@mui/lab/TabContext";
+import TabList from "@mui/lab/TabList";
+import TabPanel from "@mui/lab/TabPanel";
+
 import favicon from "public/favicon_white.ico";
 
-export default function Header({ pages = [] }) {
+export default function Header({ activeNav = "", pages = [] }) {
   // for touch screen users
   const [anchorElNav, setAnchorElNav] = useState(null);
   const handleOpenNavMenu = (event) => {
@@ -32,11 +37,16 @@ export default function Header({ pages = [] }) {
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
+  const styles = {
+    mobile: { xs: "flex", md: "none" },
+    desktop: { xs: "none", md: "flex" },
+  };
+
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ mr: 2, display: { xs: "none", md: "flex" } }}>
+          <Box sx={{ mr: 2, display: styles.desktop }}>
             <Image
               src={favicon}
               alt="Creative Minds Lab"
@@ -45,7 +55,32 @@ export default function Header({ pages = [] }) {
             />
           </Box>
 
-          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
+          <Box sx={{ flexGrow: 1, display: styles.desktop }}>
+            <TabContext value={activeNav}>
+              <TabList
+                aria-label="nav tabs"
+                textColor="inherit"
+                TabIndicatorProps={{
+                  style: {
+                    background: "white",
+                  },
+                }}
+              >
+                {pages.map((page) => (
+                  <Tab
+                    to={page.route}
+                    key={page.route}
+                    component={NextLinkComposed}
+                    label={page.name}
+                    value={page.name}
+                  />
+                ))}
+              </TabList>
+            </TabContext>
+          </Box>
+
+          {/* for mobile */}
+          <Box sx={{ display: styles.mobile }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -75,8 +110,12 @@ export default function Header({ pages = [] }) {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+                <MenuItem
+                  key={page.route}
+                  to={page.route}
+                  component={NextLinkComposed}
+                >
+                  <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -85,21 +124,12 @@ export default function Header({ pages = [] }) {
             variant="h6"
             noWrap
             component="div"
-            sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}
+            sx={{ flexGrow: 1, display: styles.mobile }}
           >
-            Creative Minds Lab
+            CML
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: "white", display: "block" }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
+
+          {/* end for mobile */}
           <Button
             color="inherit"
             onClick={(e) => {

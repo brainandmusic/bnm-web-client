@@ -11,12 +11,12 @@ import Link from "src/Link";
 
 const MAX_LENGTH = 100;
 
-export default function CardView({ name, description, id }) {
+export default function CardView({ name, description, id, path }) {
   return (
     <Card sx={{ width: 250, m: 2 }}>
       <CardActionArea
         component={Link}
-        href={`/study/${encodeURIComponent(id)}`}
+        href={`/${path}/${encodeURIComponent(id)}`}
       >
         <CardContent sx={{ height: 150 }}>
           <Typography gutterBottom variant="h5" component="div">

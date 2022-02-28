@@ -7,7 +7,10 @@ async function getUserInfo(ids) {
   return Promise.all(
     ids.map(
       async (id) =>
-        await User.findOne({ _id: id }, { firstName: 1, lastName: 1, role: 1 })
+        await User.findOne(
+          { _id: id },
+          { firstName: 1, lastName: 1, role: 1, email: 1 }
+        )
     )
   );
 }
@@ -32,19 +35,16 @@ export default async function handler(req, res) {
           { name: 1, creationDate: 1, description: 1 }
         );
         res.status(200).json({
-          success: true,
-          data: {
-            _id: study._id,
-            members: members,
-            participants: participants,
-            arms: study.arms,
-            name: study.name,
-            description: study.description,
-            groups: groups,
-          },
+          _id: study._id,
+          members: members,
+          participants: participants,
+          arms: study.arms,
+          name: study.name,
+          description: study.description,
+          groups: groups,
         });
       } catch (error) {
-        res.status(400).json({ success: false });
+        res.status(400).json({ error: error });
       }
       break;
     case "DELETE":
@@ -54,14 +54,13 @@ export default async function handler(req, res) {
           { _id: id },
           { $pull: { [type]: uid } }
         );
-        console.log(study);
-        res.status(200).json({ success: true });
+        res.status(200).json({});
       } catch (error) {
-        res.status(400).json({ success: false });
+        res.status(400).json({ error: error });
       }
       break;
     default:
-      res.status(400).json({ success: false });
+      res.status(400).json({ error: "Invalid method" });
       break;
   }
 }

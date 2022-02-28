@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 
 import CardView from "./cardView";
 
-export default function CardList({ data }) {
+export default function CardList({ data, path }) {
   return (
     <Box
       sx={{
@@ -14,6 +14,7 @@ export default function CardList({ data }) {
     >
       {data.map((item) => (
         <CardView
+          path={path}
           key={item._id}
           name={item.name}
           description={item.description}

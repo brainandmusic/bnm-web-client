@@ -9,7 +9,7 @@ const UserSchema = new mongoose.Schema({
   emailVerified: {
     type: Boolean,
     required: true,
-    default: false,
+    default: true,
   },
   emailVerifyToken: {
     type: String,

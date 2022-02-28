@@ -4,7 +4,7 @@ import { fetcher } from "lib/fetcher";
 
 import Layout from "components/layout/layout";
 import Loading from "components/loading";
-import Table from "components/table";
+import Table from "components/tabtable";
 
 import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
@@ -27,6 +27,7 @@ function useStudy(id) {
 
 const PRESETS = {
   name: { field: "name", headerName: "Name", flex: 1 },
+  email: { field: "email", headerName: "Email", flex: 1 },
   id: { field: "id", headerName: "ID", flex: 2 },
   role: { field: "role", headerName: "Role", flex: 1 },
   description: { field: "description", headerName: "Description", flex: 1 },
@@ -58,7 +59,7 @@ const Study = () => {
   console.log(data);
 
   if (data) {
-    const { name, _id, description } = data.data;
+    const { name, _id, description } = data;
     // parse data into mui readable format
     const tables = [
       {
@@ -66,6 +67,7 @@ const Study = () => {
         columns: [
           PRESETS.name,
           PRESETS.role,
+          PRESETS.email,
           PRESETS.id,
           {
             field: "actions",
@@ -89,11 +91,12 @@ const Study = () => {
             },
           },
         ],
-        rows: data.data.members.map((item) => {
+        rows: data.members.map((item) => {
           return {
             name: `${item.firstName} ${item.lastName}`,
             role: item.role,
             id: item._id,
+            email: item.email,
           };
         }),
       },
@@ -124,7 +127,7 @@ const Study = () => {
             },
           },
         ],
-        rows: data.data.participants.map((item) => {
+        rows: data.participants.map((item) => {
           return {
             name: `${item.firstName} ${item.lastName}`,
             id: item._id,
@@ -140,7 +143,7 @@ const Study = () => {
           PRESETS.id,
           PRESETS.actions,
         ],
-        rows: data.data.groups.map((item) => {
+        rows: data.groups.map((item) => {
           return {
             name: item.name,
             id: item._id,
@@ -152,7 +155,7 @@ const Study = () => {
       {
         header: "Arm",
         columns: [PRESETS.name, PRESETS.id, PRESETS.actions],
-        rows: data.data.arms.map((item) => {
+        rows: data.arms.map((item) => {
           return {
             name: item.name,
             id: item._id,
@@ -160,10 +163,9 @@ const Study = () => {
         }),
       },
     ];
-    console.log(tables);
 
     return (
-      <Layout activeNav="studies">
+      <Layout activeNav="Studies">
         <Typography variant="h4" component="h1" gutterBottom>
           {name}
         </Typography>
@@ -179,7 +181,7 @@ const Study = () => {
     );
   }
   return (
-    <Layout activeNav="studies">
+    <Layout activeNav="Studies">
       <Loading />
     </Layout>
   );

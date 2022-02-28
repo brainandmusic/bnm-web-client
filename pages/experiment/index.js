@@ -9,9 +9,9 @@ import Button from "@mui/material/Button";
 import useSWR from "swr";
 import { fetcher } from "lib/fetcher";
 
-function useStudies(id) {
+function useExperiments(id) {
   const { data, error } = useSWR(
-    id ? `/api/user/${id}/studies` : null,
+    id ? `/api/user/${id}/experiments` : null,
     fetcher
   );
 
@@ -26,17 +26,17 @@ export default function Page() {
   const { data: session, status } = useSession();
   const loading = status === "loading";
   const isUser = !!session?.user;
-  const { data, isLoading } = useStudies(session && session.user.id);
+  const { data, isLoading } = useExperiments(session && session.user.id);
   console.log(data);
 
   return (
-    <Layout activeNav="Studies">
+    <Layout activeNav="Experiments">
       {isUser && !isLoading ? (
         <>
           <Button variant="contained" sx={{ display: "block", ml: 2 }}>
-            + Add Study
+            + Add Experiment
           </Button>
-          <CardList data={data.data} path="study" />
+          <CardList data={data.data} path="experiment" />
         </>
       ) : (
         <Loading />
