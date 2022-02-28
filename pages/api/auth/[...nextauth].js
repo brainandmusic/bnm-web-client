@@ -1,16 +1,15 @@
 import NextAuth from "next-auth";
-import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "lib/mongodb";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
 
+import dbConnect from "lib/dbConnect";
 import { verifyPassword } from "lib/auth";
+import User from "models/User";
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
-  adapter: MongoDBAdapter(clientPromise),
   providers: [
     // GoogleProvider({
     //   clientId: process.env.GOOGLE_CLIENT_ID,
@@ -18,6 +17,7 @@ export default NextAuth({
     // }),
     CredentialsProvider({
       // The name to display on the sign in form (e.g. 'Sign in with...')
+      id: "credentials",
       name: "Email",
       // The credentials is used to generate a suitable form on the sign in page.
       // You can specify whatever fields you are expecting to be submitted.
@@ -39,29 +39,21 @@ export default NextAuth({
         // You can also use the `req` object to obtain additional parameters
         // (i.e., the request IP address)
         //
-        return clientPromise
-          .then((db) => {
-            return db.db("bnm");
-          })
-          .then((db) => {
-            return db.collection("users");
-          })
-          .then((users) => {
-            return users.findOne({ email: credentials.username });
-          })
-          .then((user) => {
-            if (user && verifyPassword(credentials.password, user.password)) {
-              return {
-                name: user.firstName + " " + user.lastName,
-                role: user.role,
-                email: user.email,
-              };
-            }
+        await dbConnect();
+        try {
+          const user = await User.findOne({ email: credentials.username });
+          if (user && verifyPassword(credentials.password, user.password)) {
+            return {
+              id: user._id,
+              name: user.firstName + " " + user.lastName,
+              role: user.role,
+              email: user.email,
+            };
             return null;
-          })
-          .catch((err) => {
-            throw new Error(err);
-          });
+          }
+        } catch (e) {
+          throw new Error(e);
+        }
       },
     }),
   ],
@@ -101,7 +93,7 @@ export default NextAuth({
   // pages is not specified for that route.
   // https://next-auth.js.org/configuration/pages
   pages: {
-    // signIn: '/auth/signin',  // Displays signin buttons
+    signIn: "/auth/signin", // Displays signin buttons
     // signOut: '/auth/signout', // Displays form with sign out button
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
@@ -112,14 +104,22 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    // async signIn({ user, account, profile, email, credentials }) { return true },
-    // async redirect({ url, baseUrl }) { return baseUrl },
+    // async signIn({ user, account, profile, email, credentials }) {
+    //   return true;
+    // },
+    // async redirect({ url, baseUrl }) {
+    //   return baseUrl;
+    // },
     async session({ session, token, user }) {
-      session.user.role = token.role;
+      if (session) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
       return session;
     },
     async jwt({ token, user, account, profile, isNewUser }) {
       if (user) {
+        token.id = user.id;
         token.role = user.role;
       }
       return token;
