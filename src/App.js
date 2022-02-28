@@ -3,7 +3,7 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect
+  Redirect,
 } from "react-router-dom";
 import { AuthContextProvider } from "contexts/AuthContext";
 import Account from "routes/pages/Accounts";
