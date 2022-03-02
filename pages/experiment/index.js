@@ -30,7 +30,7 @@ export default function Page() {
   console.log(data);
 
   return (
-    <Layout activeNav="Experiments">
+    <>
       {isUser && !isLoading ? (
         <>
           <Button variant="contained" sx={{ display: "block", ml: 2 }}>
@@ -41,6 +41,6 @@ export default function Page() {
       ) : (
         <Loading />
       )}
-    </Layout>
+    </>
   );
 }

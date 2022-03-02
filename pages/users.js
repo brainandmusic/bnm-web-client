@@ -184,7 +184,7 @@ export default function Page() {
   const { data, isLoading } = useUsers(session && session.user.id);
 
   return (
-    <Layout activeNav="Users">
+    <>
       {isUser && !isLoading ? (
         <ControlledTable
           data={data.data.map((item) => {
@@ -199,6 +199,6 @@ export default function Page() {
       ) : (
         <Loading />
       )}
-    </Layout>
+    </>
   );
 }

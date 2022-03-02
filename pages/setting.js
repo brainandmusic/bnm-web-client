@@ -16,7 +16,7 @@ export default function Page() {
   const isUser = !!session?.user;
 
   return (
-    <Layout activeNav="Setting">
+    <>
       {isUser ? (
         <>
           <Typography variant="h4" component="h1" gutterBottom>
@@ -66,6 +66,6 @@ export default function Page() {
       ) : (
         <Loading />
       )}
-    </Layout>
+    </>
   );
 }

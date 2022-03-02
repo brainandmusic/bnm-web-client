@@ -7,7 +7,6 @@ import Container from "@mui/material/Container";
 import TextField from "@mui/material/TextField";
 
 import Branding from "components/layout/branding";
-import Footer from "components/layout/footer";
 
 export default function SignIn({ providers }) {
   const emailEl = useRef(null);
@@ -19,7 +18,7 @@ export default function SignIn({ providers }) {
     setPassword(passwordEl.current.value);
   });
   return (
-    <Container maxWidth="md" sx={{ mt: 10 }}>
+    <Box sx={{ mt: 10 }}>
       <Branding />
       {/* {Object.values(providers).map((provider) => (
         <div key={provider.name}>
@@ -75,8 +74,7 @@ export default function SignIn({ providers }) {
           Sign In with Email
         </Button>
       </Box>
-      <Footer />
-    </Container>
+    </Box>
   );
 }
 

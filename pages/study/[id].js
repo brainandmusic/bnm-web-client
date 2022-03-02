@@ -165,7 +165,7 @@ const Study = () => {
     ];
 
     return (
-      <Layout activeNav="Studies">
+      <>
         <Typography variant="h4" component="h1" gutterBottom>
           {name}
         </Typography>
@@ -177,14 +177,10 @@ const Study = () => {
           {description}
         </Typography>
         <Table data={tables} />
-      </Layout>
+      </>
     );
   }
-  return (
-    <Layout activeNav="Studies">
-      <Loading />
-    </Layout>
-  );
+  return <Loading />;
 };
 
 export default Study;

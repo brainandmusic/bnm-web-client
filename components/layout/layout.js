@@ -7,15 +7,12 @@ import { useSession } from "next-auth/react";
 
 import { roleConfig } from "lib/roleConfig";
 
-export default function Layout({ activeNav = "", children }) {
+export default function Layout({ children }) {
   const { data: session, status } = useSession();
 
   return (
     <>
-      <Header
-        pages={session && roleConfig[session.user.role]}
-        activeNav={activeNav}
-      />
+      {session && <Header pages={roleConfig[session.user.role]} />}
       <Container maxWidth="xl" component="main" sx={{ mt: 3 }}>
         {children}
       </Container>

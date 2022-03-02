@@ -1,9 +1,10 @@
 import { NextLinkComposed } from "src/Link";
 import Image from "next/Image";
+import { useRouter } from "next/router";
 
 import { signIn, signOut, useSession } from "next-auth/react";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -24,7 +25,12 @@ import TabPanel from "@mui/lab/TabPanel";
 
 import favicon from "public/favicon_white.ico";
 
-export default function Header({ activeNav = "", pages = [] }) {
+const parseRoute = (pathname) =>
+  pathname.indexOf("/", 1) == -1
+    ? pathname
+    : pathname.substring(0, pathname.indexOf("/", 1));
+
+export default function Header({ pages = [] }) {
   // for touch screen users
   const [anchorElNav, setAnchorElNav] = useState(null);
   const handleOpenNavMenu = (event) => {
@@ -34,6 +40,9 @@ export default function Header({ activeNav = "", pages = [] }) {
     setAnchorElNav(null);
   };
 
+  const { pathname } = useRouter();
+  const [activeNav, setActiveNav] = useState(parseRoute(pathname));
+
   const { data: session, status } = useSession();
   const loading = status === "loading";
 
@@ -41,6 +50,10 @@ export default function Header({ activeNav = "", pages = [] }) {
     mobile: { xs: "flex", md: "none" },
     desktop: { xs: "none", md: "flex" },
   };
+
+  useEffect(() => {
+    setActiveNav(parseRoute(pathname));
+  });
 
   return (
     <AppBar position="static">
@@ -72,7 +85,7 @@ export default function Header({ activeNav = "", pages = [] }) {
                     key={page.route}
                     component={NextLinkComposed}
                     label={page.name}
-                    value={page.name}
+                    value={page.route}
                   />
                 ))}
               </TabList>
@@ -106,7 +119,7 @@ export default function Header({ activeNav = "", pages = [] }) {
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: "block", md: "none" },
+                display: styles.mobile,
               }}
             >
               {pages.map((page) => (

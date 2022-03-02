@@ -4,14 +4,21 @@ import { red } from "@mui/material/colors";
 // Create a theme instance.
 const theme = createTheme({
   palette: {
-    // primary: {
-    //   main: "#556cd6",
-    // },
-    // secondary: {
-    //   main: "#19857b",
-    // },
+    type: "light",
+    primary: {
+      main: "#b3cde3",
+    },
+    secondary: {
+      main: "#decbe4",
+    },
     error: {
-      main: red.A400,
+      main: "#fbb4ae",
+    },
+    warning: {
+      main: "#fed96a",
+    },
+    success: {
+      main: "#b3e2cd",
     },
   },
 });
