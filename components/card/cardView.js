@@ -1,4 +1,5 @@
 import * as React from "react";
+import { useSWRConfig } from "swr";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardActionArea from "@mui/material/CardActionArea";
@@ -12,8 +13,10 @@ import Link from "src/Link";
 const MAX_LENGTH = 100;
 
 export default function CardView({ name, description, id, path }) {
+  const { mutate } = useSWRConfig();
+  const [display, setDisplay] = React.useState("block");
   return (
-    <Card sx={{ width: 250, m: 2 }}>
+    <Card sx={{ width: 250, m: 2, display: display }}>
       <CardActionArea
         component={Link}
         href={`/${path}/${encodeURIComponent(id)}`}
@@ -30,7 +33,19 @@ export default function CardView({ name, description, id, path }) {
         </CardContent>
       </CardActionArea>
       <CardActions sx={{ display: "flex", flexDirection: "row-reverse" }}>
-        <IconButton aria-label="delete">
+        <IconButton
+          aria-label="delete"
+          onClick={() =>
+            fetch(`/api/${path}/${id}`, {
+              method: "DELETE",
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                mutate(`/api/user/`);
+                setDisplay("none");
+              })
+          }
+        >
           <DeleteIcon />
         </IconButton>
       </CardActions>

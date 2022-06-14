@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   await dbConnect();
 
   switch (method) {
-    case "GET":
+    case "GET": // get specific stuy
       try {
         const [id] = params;
         const study = await Study.findOne({ _id: id });
@@ -47,9 +47,30 @@ export default async function handler(req, res) {
         res.status(400).json({ error: error });
       }
       break;
+    case "POST": // create studies
+      try {
+        const { name, description, creator } = JSON.parse(req.body);
+        await Study.create({
+          name: name,
+          description: description,
+          creator: creator,
+        });
+        res.status(200).json({ success: true });
+      } catch (e) {
+        console.log(e);
+        res.status(400).json({ error: e });
+      }
+      break;
     case "DELETE":
       try {
         const [id, type, uid] = params;
+        if (!type) {
+          // delete study
+          await Study.deleteOne({ _id: id });
+          res.status(200).json({});
+          return;
+        }
+        // delete members/participants/groups/arms
         const study = await Study.findOneAndUpdate(
           { _id: id },
           { $pull: { [type]: uid } }
